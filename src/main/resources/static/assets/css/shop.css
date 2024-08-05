@@ -1,0 +1,31 @@
+.card{
+
+    & .card-sticker-second{
+        left: 30%;
+    }
+    & .card-sticker-third{
+        left: 0;
+        top:12%;
+    }
+   
+}
+@media only screen and (max-width: 1132px){
+    .card{
+        & .card-sticker{
+            width: 70px;
+        }
+        
+         & .card-sticker-third{
+          top:14%;
+          left: 0;
+         }
+      }
+}
+@media only screen and (max-width: 768px){
+    .card .card-sticker-second{
+      left: 55%;
+     }
+     #navListSHOP{
+      display: none;
+    }
+}

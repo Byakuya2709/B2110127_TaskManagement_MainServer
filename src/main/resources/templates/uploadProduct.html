@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+  <link rel="stylesheet" href="/assets/css/animation.css">
+  <link href="/data/font/css/webfonts/all.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Your HTML content goes here -->
+
+  <!-- JS Files -->
+  <script src="/assets/js/jquery-3.7.1.js"></script>
+  <script src="/assets/js/bootstrap.min.js"></script>
+  <script src="/assets/js/script.js"></script>
+ 
+ 
+    <title>demo</title>
+</head>
+<body>
+    <header id="header">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary" style="background-color:var(--header-be)!important;">
+                <div class="container-fluid">
+                    <a class="logo-brand" href="index.html">
+                       <span><p>THE UNDER </p></span> 
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#main-nav" aria-controls="offcanvasNavbar2" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="offcanvas offcanvas-end offcanvas-size-sm" id="main-nav" tabindex="-1" aria-labelledby="offcanvasNavbar2">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title logo-brand" id="offcanvasNavbarLabel">THE UNDER</h5>
+                            <button type="button" class="btn-close  btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                          </div>
+                        <div class="offcanvas-body">
+                            <ul class="navbar-nav ms-4">
+                                <li class="menu-item">
+                                    <div class="dropdown">
+                                        <a class=" menu-link link-active" href="shop.html">SHOP</a>
+                                        <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="shop.html#list-item-top">TOPS</a></li>
+                                        <li><a class="dropdown-item" href="shop.html#list-item-bottom">BOTTOMS</a></li>
+                                        <li><a class="dropdown-item" href="shop.html#list-item-asso">ACCESSORIES</a></li>
+                                     </ul>
+                                    </div>
+                                </li>
+                                <li class="menu-item">
+                                  <div class="dropdown">
+                                      <a class="menu-link link-active"  href="bray.html">BRAY</a>
+                                  </div>
+                              </li>
+                                <li class="menu-item">
+                                    <div class="dropdown">
+                                        <a class="menu-link link-active"  href="news.html">NEWS</a>
+                                    </div>
+                                </li>
+
+                                <li class="menu-item">
+                                    <div class="dropdown">
+                                        <a class="menu-link link-active"  href="about.html">ABOUT</a>
+                                    </div>
+                                </li>
+                                <li class="menu-item">
+                                  <div class="dropdown">
+                                      <a class="menu-link link-active"  href="signup.html">SIGN UP</a>
+                                  </div>
+                              </li>
+                              <li class="menu-item">
+                                <div class="dropdown">
+                                    <a class="menu-link link-active"  href="login.html">LOG IN</a>
+                                </div>
+                              </li>
+            
+                            </ul>
+                            <div class="d-flex">
+                                <form id="form-searching" name="form-search" method="get" action="search.html" >
+                                  <input onkeypress="checkKeySearch(e)" type="text" name="textSearch" placeholder="Search" >
+                                  <i onclick="doSearch()" class="fa-solid fa-magnifying-glass"></i>
+                                </form>
+                                <span class="cart-value">
+                                    <a href="cart.html" class="btn-shopping_cart">
+                                    <i class="fa-solid fa-cart-shopping"></i>
+                                    <span class="cart-quantity">0</span>
+                                  </a>
+                                </span>
+                                <script>countProduct();</script>   
+                            </div>
+                            
+                            
+
+                        </div>
+                    </div>
+                </div>
+         </nav> 
+       
+    </header>
+    
+    <main>
+         <!-- Hiển thị thông báo thành công -->
+    <div th:if="${successMessage}">
+        <p style="color: green;" th:text="${successMessage}"></p>
+    </div>
+    
+    <!-- Hiển thị thông báo lỗi -->
+    <div th:if="${errorMessage}">
+        <p style="color: red;" th:text="${errorMessage}"></p>
+    </div >
+    
+    <div>
+        <form th:action="@{/product/new}"
+           th:object="${product}" method="post"
+           enctype="multipart/form-data"
+           
+           >
+               
+               <div class="container" >
+                    <div class="row"  >
+                        <div class="col-8">
+                             <div class="custom-file">
+                                <label class="custom-file-label" for="imageUpload" style=" font-size: 1.2rem; margin-top:5px; margin-bottom: 5px " >Chọn hình ảnh</label>
+                                <input class="custom-file-input" type="file" name="image" accept="image/png, image/jpeg" onchange="previewImage(event)" />
+                               
+                             </div>
+                             <div>
+                                <img id="imagePreview" style="margin-top: 10px; max-height: 300px;" />
+                            </div>
+                        </div>
+                     
+                        <div class="col-4" id="form-customer">
+                            <div class="input-group">
+                                
+                                <input type="text" id="productName" th:field="*{productName}" required>
+                                <label for="productName">Tên sản phẩm:</label>
+                                <div th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}" class="invalid-feedback">          
+                                </div>
+                            </div>
+                             <div class="input-group">
+                                
+                                 <input type="number" id="productPrice" th:field="*{productPrice}" required><br><br>
+                                 <label for="productPrice">Giá sản phẩm:</label>
+                                  <div th:if="${#fields.hasErrors('productPrice')}" th:errors="*{productPrice}"></div>
+                            </div>
+                             <div class="input-group">
+                             
+                                <select th:field="*{productType}" id="productType" name="productType" role="combobox" required>
+                                    <option th:each="productType : ${productTypes}" 
+                                        th:value="${productType.type_id}" 
+                                        th:text="${productType.type_name}">
+                                    </option>
+                                </select>
+                                 <label for="productType">Loại sản phẩm:</label>
+                            </div>
+                            <div class="input-group">
+                                <textarea id="productDescription" th:field="*{productDescription}"></textarea>
+                                <label for="productDescription">Mô tả sản phẩm</label>
+                            </div>
+                           
+                            <div>
+                            <label style="color: gray;font-size: 1rem; margin-top:5px ">Số lượng sản phẩm:</label>
+                             <div class="row row-cols-4">
+                                 <div class="col" th:each="size, iterStat : *{productSizes}">
+                                    <label style="position: relative;" th:text="${size.sizeName} + ':'"></label>
+                                     <input class="sizeInput" type="number" th:field="*{productSizes[__${iterStat.index}__].quantity}" min="0" required>
+                                    </div>
+
+                            </div>
+<!--                                         <div class="col"  th:each="size : *{productSizes}">
+                                            <label style="position: relative;" th:text="${size.sizeName}"></label>
+                                            <input class="sizeInput" type="number" th:field="*{productSizes}" min="0" required>                                      
+                                        </div>-->
+                            </div>
+                            <div class="row input-group">    
+                                <button type="submit">Lưu Sản Phẩm</button>
+                            </div>
+                             </div>
+                        </div>
+                    </div>
+               </div>
+               
+            </form>
+    </div >
+           
+    </main>
+
+    <footer id="footer " class="border-top">
+      <div class="container p-3">
+        <div class="row">
+          <div class="col">
+            <h3>Hệ Thống Cửa Hàng</h3>
+            <div class="location">
+              <ul class="location-list">
+                <li class="location-item">
+                  <p class="d-inline-flex gap-1">
+                    <button type="button" data-bs-toggle="collapse" data-bs-target="#collapseLocation-info-1" aria-expanded="false" aria-controls="collapseExample">
+                      <h4><i class="fa-solid fa-location-dot"></i>Chi Nhánh Hồ Chí Minh<i class=" ms-2 fa-solid fa-angle-down"></i></h4>
+                    </button>
+                  </p>
+                  <div class="collapse" id="collapseLocation-info-1">
+                    <div class="location-info">
+                      <p ><strong>Quận 1</strong> - Central Market 4 Phạm Ngũ Lão, Phường Phạm Ngũ Lão.</p>
+                      <p> <strong>Quận 10</strong> - 561 Sư Vạn Hạnh, Phường 13.</p>
+                      <p><strong>Quận Gò Vấp</strong> - 326 Quang Trung, Phường 10.</p>
+                    </div>
+                  </div>
+                  
+                </li>
+                <li class="location-item">
+                  <p class="d-inline-flex gap-1">
+                <button type="button" data-bs-toggle="collapse" data-bs-target="#collapseLocation-info-2" aria-expanded="false" aria-controls="collapseExample">
+                  <h4><i class="fa-solid fa-location-dot"></i>Chi Nhánh Cần Thơ<i class=" ms-2 fa-solid fa-angle-down"></i></h4>
+                    </button>
+                  </p>
+                  <div class="collapse" id="collapseLocation-info-2">
+                    <div class="location-info">
+                      <p><strong>Quận Ninh Kiều</strong> - 52 Mậu Thân, Phường An Phú.
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <div id="contact">
+                  <p class="mb-0"><i class="fa-solid fa-envelope me-2"></i>nhom5@student.ctu.edu.vn</p>
+                  <p class="mb-0"><i class="fa-solid fa-phone me-2"></i> Hỗ trợ / Mua hàng: 0xxx xxx xxx</p>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="social">
+              <h3>Mạng Xã Hội</h3>
+                <a href="" class="social-link">
+                  <i class="social-icon fa-brands fa-facebook"></i>
+                </a>
+                 <a href="" class="social-link">
+                   <i class="social-icon fa-brands fa-instagram"></i>
+                  </a> 
+                  <a href="" class="social-link">
+                    <i class="social-icon fa-brands fa-youtube"></i>
+                   </a>
+             </div>
+              <div class="policy">
+                <p class="d-inline-flex gap-1">
+                  <button type="button" data-bs-toggle="collapse" data-bs-target="#collapsePolicy" aria-expanded="false" aria-controls="collapseExample">
+                   <h3>Chính Sách<i class=" ms-2 fa-solid fa-angle-down"></i></h3>
+                  </button>
+                </p>
+                <div class="collapse" id="collapsePolicy">
+                  <ul class="policy-list" style="list-style-type: decimal; margin-left: -1rem;">
+                      <li class="policy-item"><a href="">Chính sách bảo mật</a></li>
+                      <li class="policy-item"><a href="">FAQ</a></li>
+                      <li class="policy-item"><a href="">Chính sách Bảo hành & Đổi trả</a></li>
+                      <li class="policy-item"><a href="">Chính sách giao hàng</a></li>
+                    </ul>
+        
+                </div>
+                   
+              </div>
+          </div>
+         
+        </div>
+      </div>
+      <div class=" text-center pt-2 border-top">
+        <p>Copyright &copy; nhom 5.</p>
+      </div>
+    </footer>
+    
+    <script>
+         function previewImage(event) {
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.src = URL.createObjectURL(event.target.files[0]);
+        }
+    </script>
+</body>
+</html>

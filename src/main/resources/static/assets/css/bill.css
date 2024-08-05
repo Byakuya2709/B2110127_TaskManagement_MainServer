@@ -1,0 +1,126 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+html{
+    scroll-behavior: smooth;
+    font-size: 67,5%;
+
+    font-family: Arial, Helvetica, sans-serif!important;
+}
+.border-full{
+    padding: 10px;
+    border: 2px solid black;
+    gap:1rem
+}
+h6{
+    font-weight: 700;
+}
+.box{ 
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 2.5rem;
+    gap: 1.5rem;
+}
+.box-4{
+    background-color: aliceblue;
+    padding: 5px;
+    & .input-group{
+        position: relative;
+        display: flex;
+        }
+        & input{
+           width: 40%;
+           border: 1px solid var(--border-color);
+           border-radius: 3px;
+           background: transparent;
+           color: black;
+           outline: none;
+         }
+    
+}
+
+.col input{
+    background-color: #fff;
+}
+.row{
+    background-color: rgba(210, 224, 236, 0.67);
+}
+.box-1,.box-2,.box-3{
+    background-color: aliceblue;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 10px;
+        & .input-group{
+        position: relative;
+        display: flex;
+        }
+        & input,select,textarea{
+           width: 100%;
+           border: 1px solid var(--border-color);
+           border-radius: 3px;
+           background: transparent;
+           color: #191818;
+           background-color: #fff;
+           outline: none;
+         }
+    
+
+       
+      }
+table,th,td{
+    background-color: #fff;
+    padding: 0.5rem;
+    border: 1px solid black;
+    
+}
+.img-payment{
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.img-payment img{
+    
+    width: 30px;
+}
+.footer-btn{
+
+    gap:10px;
+    justify-content: flex-end;
+}
+.headf{
+    background-color:rgba(138, 138, 235, 0.951);
+    position: relative;
+    font-weight: 800;
+    display: flex;
+    transform: translateY(6px);
+    border-bottom: 2px solid black;
+    & p{
+        transform: translate(15px,8px);
+    }
+}
+.head-btnf{
+    position: absolute;
+    top:0;
+    right: 15px;
+    font-size: 1.3rem;
+    padding: 4px;
+    }
+.head{
+    position: relative;
+    & p{
+        font-weight: 800;
+        transform: translate(-10px,-40px);
+    }
+}
+
+.head-btn{
+    margin-left: 1600px;
+    transform: translate(87px,-75px);
+    & i{
+       font-size: 1.3rem;
+       padding: 4px;
+    }
+}

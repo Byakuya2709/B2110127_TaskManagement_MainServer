@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Nosifer&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@600&family=Tilt+Neon&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Stick+No+Bills:wght@800&display=swap');
+.logo-brand {
+    position: relative;
+    font-size: 1.7rem;
+    background: #fff;
+    color: #000;
+    mix-blend-mode: difference;
+    text-transform: uppercase;
+    font-weight: bolder;
+    letter-spacing: 0.4em;
+  }
+  
+  .logo-brand span {
+    color: #fff;
+    mix-blend-mode: difference;
+  }
+  .logo-brand span >p {
+    font-family: 'Stick No Bills', sans-serif;
+    transform: translateY(20%);
+  }
+  
+  .logo-brand:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 100%;
+    background: #000;
+    animation: animationLogo 3s linear infinite;
+  }
+  
+  @keyframes animationLogo {
+    0% {
+      left: 0;
+    }
+    50% {
+      left: calc(100% - 80px);
+    }
+    100% {
+      left: 0;
+    }
+  }
+  .background {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+  }
+
+  
+.container-loading{
+  text-align: center;
+  margin-top: 4rem;
+ & p {
+    text-transform: uppercase;
+    border: 4px double rgba(255,255,255,.25);
+    border-width: 4px 0;
+    & span {
+ font-size: 5rem;
+      font-weight: 700;
+      letter-spacing: 0.2;
+      display: block;
+      margin: 0 auto;
+      text-shadow: 0 0 80px rgba(255,255,255,.5);
+      background:
+      linear-gradient( 140deg, transparent 50%, #5D9FFF 50% ),
+
+      linear-gradient(-225deg, #5D9FFF 20%, #B8DCFF 40%),
+      #8ec5fc;  
+    background-size: 50px 50px;
+     
+    -webkit-background-clip: text;
+	   background-clip: text;
+	  -webkit-text-fill-color: transparent;
+	  -webkit-animation: aitf 80s linear infinite;
+	  -webkit-transform: translate3d(0,0,0);
+	  -webkit-backface-visibility: hidden;
+
+   }
+ }
+}
+@-webkit-keyframes aitf {
+	0% { background-position: 0% 50%; }
+	100% { background-position: 100% 50%; }
+}
