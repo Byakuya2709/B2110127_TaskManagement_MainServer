@@ -70,7 +70,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
                        
-            System.out.println( SecurityContextHolder.getContext().toString());
+//            System.out.println( SecurityContextHolder.getContext().toString());
         chain.doFilter(request, response);
     }
 }

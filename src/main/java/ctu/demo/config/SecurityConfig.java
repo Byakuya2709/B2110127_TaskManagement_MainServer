@@ -60,6 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/product/**").hasRole("CUSTOMER")
             .antMatchers("/public/**").permitAll()
             .antMatchers("/auth/**").permitAll()
+            .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
             .anyRequest().authenticated()
             .and()
             .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)

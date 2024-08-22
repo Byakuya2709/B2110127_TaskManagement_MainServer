@@ -40,6 +40,8 @@ public class globalException {
 //        
 //        return ResponseEntity.badRequest().body(res);
 //    
+    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
           Map<String, Object> errorResponse = new HashMap<>();

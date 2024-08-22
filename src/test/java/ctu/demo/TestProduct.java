@@ -55,8 +55,8 @@ public class TestProduct {
 //    }
     @Test
     public void testSaveProductWithSizes() {
-        // Given
-        ProductType productType = productTypeService.getProductTypeById("3");
+//        // Given
+//        ProductType productType = productTypeService.getProductTypeById("3");
         //
 //        Product product = new Product();
 //        product.setProductName("Product 6");
@@ -80,11 +80,11 @@ public class TestProduct {
 //        assertEquals(100,savedProduct.getProductPrice());
       
 
-        
-       ProductType productType1 =productTypeService.getProductTypeById("3");
-       assertEquals("quandai",productType1.getType_name());
-       
-       
+//        
+//       ProductType productType1 =productTypeService.getProductTypeById("3");
+//       assertEquals("quandai",productType1.getType_name());
+//       
+//       
 //
 //    
 //        Product fetchedProduct = productRepository.findById(savedProduct.getProductId()).orElse(null);

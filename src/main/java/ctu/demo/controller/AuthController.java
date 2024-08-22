@@ -16,6 +16,7 @@ import ctu.demo.model.User;
 import ctu.demo.repository.AccountRepository;
 import ctu.demo.request.LoginRequest;
 import ctu.demo.service.AccountService;
+import ctu.demo.service.EmailService;
 import ctu.demo.service.UserDetailsServiceImpl;
 import ctu.demo.service.UserService;
 import java.io.IOException;
@@ -59,6 +60,9 @@ public class AuthController {
     
    @Autowired
     private JwtUtil jwtUtil;
+   
+   @Autowired
+   private EmailService emailService;
     
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -105,50 +109,44 @@ public class AuthController {
         }
    }
     
+@PostMapping("/verify")
+public ResponseEntity<?> verifyCode(@RequestBody EmailRequest emailRequest) {
+    String email = emailRequest.getEmail().trim();  // Trích xuất và xử lý email
+
+    // Kiểm tra nếu tài khoản đã tồn tại
+    if (accountService.getAccountByEmail(email) != null) {
+        return ResponseHandler.resBuilder("NGƯỜI DÙNG ĐÃ TỒN TẠI!!!", HttpStatus.BAD_REQUEST, null);
+    }
+
+    // Tạo mã xác thực và gửi email
+    String verificationCode = accountService.generateVerificationCode();
+    emailService.sendVerificationEmail(email, verificationCode);
+
+    return ResponseHandler.resBuilder("Bạn cần nhập mã xác thực", HttpStatus.OK, null);
+}
+    
+    
     
     
     
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestPart("account") AccountRequest account,
+    public ResponseEntity<?> register(@RequestPart("account") AccountRequest accountRequest,
                                       @RequestPart("image") MultipartFile image) {
         
-        System.out.println(account.getEmail());
-        if (accountService.getAccountByEmail(account.getEmail()) != null) {
-            return ResponseHandler.resBuilder("USER EXISTED!!", HttpStatus.BAD_REQUEST, null);
-        }
-
-        Account newAccount = new Account();
-        newAccount.setEmail(account.getEmail());
-        newAccount.setPassword(passwordEncoder.encode(account.getPassword()));
-        
-        User newUser = new User();
-        newUser.setAddress(account.getAddress());
-      try{ newUser.setBirth(account.getBirthdayDate(account.getBirth()));}
-        catch (ParseException e) {
-        return ResponseHandler.resBuilder("Invalid birth date format", HttpStatus.BAD_REQUEST, null);
-    }
-        newUser.setFullname(account.getFullname());
-        newUser.setGender(User.Gender.valueOf(account.getGender()));
-        
-        if (image != null && !image.isEmpty()) {
-        try {
-            byte[] bytes = image.getBytes();
-            newUser.setAvatar(bytes);
+        System.out.println(accountRequest.getEmail());
+         try {
+            Account savedAccount = accountService.registerNewAccount(accountRequest, image);
+            return ResponseHandler.resBuilder("User registered successfully", HttpStatus.CREATED, savedAccount);
+//        } catch (UserAlreadyExistsException e) {
+//            return ResponseHandler.resBuilder(e.getMessage(), HttpStatus.BAD_REQUEST, null);
+        } catch (ParseException e) {
+            return ResponseHandler.resBuilder("Invalid birth date format", HttpStatus.BAD_REQUEST, null);
         } catch (IOException e) {
             return ResponseHandler.resBuilder("Error saving image", HttpStatus.BAD_REQUEST, null);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("SOME ERROR WHEN REGISTERED", HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
-    }
-        
-            newAccount.setUser(newUser);
-            newUser.setAccount(newAccount);
-            
-            
-//            User savedUser = userService.saveUser(newUser);
-            Account savedAccount = accountService.saveAccount(newAccount);
-            if(savedAccount!=null)
-            return ResponseHandler.resBuilder("User registered successfully", HttpStatus.CREATED, newAccount);
-            else return ResponseHandler.resBuilder("SOME ERROR WHEN REGISTERED ", HttpStatus.INTERNAL_SERVER_ERROR, null);
-         }
+         }  
 //    
 //    public AuthenticanResponse authenticate(LoginRequest req){
 //        Account user =accountService.getAccountByEmail(req.getEmail());
