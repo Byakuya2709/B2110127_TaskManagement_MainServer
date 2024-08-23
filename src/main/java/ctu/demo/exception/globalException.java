@@ -4,7 +4,7 @@
  */
 package ctu.demo.exception;
 
-import com.example.respone.APIResponse;
+import ctu.demo.respone.APIResponse;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;

@@ -71,13 +71,6 @@ public class AccountService {
 
         newAccount.setUser(newUser);
         newUser.setAccount(newAccount);
-        
-        
-        String verificationCode = generateVerificationCode(); // Implement this method
-
-        // Send the verification email
-        emailService.sendVerificationEmail(newAccount.getEmail(), verificationCode);
-        //xác thực mã được gưi qua mail trước khi lưu tài khoản
 
         return saveAccount(newAccount);
     }

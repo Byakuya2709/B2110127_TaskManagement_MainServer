@@ -5,7 +5,7 @@
 package ctu.demo.controller;
 
 import ctu.demo.utils.FileUtil;
-import com.example.respone.ResponseHandler;
+import ctu.demo.respone.ResponseHandler;
 import ctu.demo.dto.ProductMapper;
 import ctu.demo.dto.ProductRequest;
 import ctu.demo.model.Image;
