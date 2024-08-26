@@ -18,10 +18,12 @@ import org.springframework.stereotype.Service;
  * @author ADMIN
  */
 @Service
-public class ImageService{
+public class ImageService {
+
     @Autowired
     private ImageRepository imageRepository;
-     public Image getimageById(Long id) {
-        return imageRepository.findById(id).orElseThrow(() -> new AppException(NOTFOUND_ERROR,id));
+
+    public Image getimageById(Long id) {
+        return imageRepository.findById(id).orElseThrow(() -> new AppException(NOTFOUND_ERROR, id));
     }
 }

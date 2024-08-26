@@ -20,7 +20,6 @@ import ctu.demo.respone.ResponseHandler;
 import ctu.demo.service.AccountService;
 import ctu.demo.service.EmailService;
 import ctu.demo.service.OtpService;
-import ctu.demo.service.RedisService;
 import ctu.demo.service.UserDetailsServiceImpl;
 import ctu.demo.service.UserService;
 import java.io.IOException;
@@ -65,23 +64,20 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
-    
-   @Autowired
+
+    @Autowired
     private JwtUtil jwtUtil;
-   
-   @Autowired
-   private EmailService emailService;
-    
-   @Autowired
-   private OtpService otpService;
-   
-   @Autowired
-   private RedisService redisService;
-   
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private OtpService otpService;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
-     @Autowired
+
+    @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
@@ -89,104 +85,89 @@ public class AuthController {
     @Autowired
     private AccountService accountService;
 
-//    @PostMapping("/login")
-//    public String login(@RequestBody Account account) {
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                       account.getEmail(),
-//                        account.getPassword()
-//                )
-//        );
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        return jwtUtil.generateToken(account.getEmail());
-//    }
-
-     @PostMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<Map<String, String>> createToken(@RequestBody AuthRequest authRequest) {
-       try {
+        try {
             // Thực hiện xác thực người dùng
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+                    new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
             );
 
             // Tạo JWT Token nếu xác thực thành công
-           final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
-           final String jwt = jwtUtil.generateToken(userDetails);
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
+            final String jwt = jwtUtil.generateToken(userDetails);
 
-           Map<String, String> response = new HashMap<>();
-           response.put("token", jwt);
-          return ResponseEntity.ok(response);
-       } catch (Exception e) {
-           Map<String, String> errorResponse = new HashMap<>();
-           errorResponse.put("error", "Invalid credentials");
-           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            Map<String, String> response = new HashMap<>();
+            response.put("token", jwt);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
-   }
-    
-@PostMapping("/generate")
-public ResponseEntity<?> generateVerificationCode(@RequestBody EmailRequest emailRequest) {
-    String email = emailRequest.getEmail().trim();  // Trích xuất và xử lý email
+    }
 
-    // Kiểm tra nếu tài khoản đã tồn tại
-    if (accountService.getAccountByEmail(email) != null) {
-        return ResponseHandler.resBuilder("NGƯỜI DÙNG ĐÃ TỒN TẠI!!!", HttpStatus.BAD_REQUEST, null);
-    }
-    
-    String otp = otpService.generateOtp();
-    
-    RestTemplate restTemplate = new RestTemplate();
-    String url = "http://localhost:8081/api/otp/generate";
-    try {
-        ResponseEntity<String> response = restTemplate.postForEntity(url, new MailRequest(email, otp), String.class);
-        if (!response.getStatusCode().equals(HttpStatus.OK)) {
-            return ResponseHandler.resBuilder("Lỗi khi tạo mã!!!", HttpStatus.BAD_REQUEST, null);
+    @PostMapping("/generate")
+    public ResponseEntity<?> generateVerificationCode(@RequestBody EmailRequest emailRequest) {
+        String email = emailRequest.getEmail().trim();  // Trích xuất và xử lý email
+
+        // Kiểm tra nếu tài khoản đã tồn tại
+        if (accountService.getAccountByEmail(email) != null) {
+            return ResponseHandler.resBuilder("NGƯỜI DÙNG ĐÃ TỒN TẠI!!!", HttpStatus.BAD_REQUEST, null);
         }
-    } catch (Exception e) {
-        return ResponseHandler.resBuilder("Lỗi khi kết nối đến dịch vụ lưu mã OTP", HttpStatus.INTERNAL_SERVER_ERROR, null);
-    }
-    // Tạo mã xác thực và gửi email
-    
+        //tạo mã otp 
+        String otp = otpService.generateOtp();
+
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:8081/api/otp/generate";
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(url, new MailRequest(email, otp), String.class);
+            if (!response.getStatusCode().equals(HttpStatus.OK)) {
+                return ResponseHandler.resBuilder("Lỗi khi tạo mã!!!", HttpStatus.BAD_REQUEST, null);
+            }
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi kết nối đến dịch vụ lưu mã OTP", HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+        // Tạo mã xác thực và gửi email
+
 //    emailService.sendVerificationEmail(email, otp);
+        return ResponseHandler.resBuilder("Mã OTP đã được gửi đến email của bạn", HttpStatus.OK, null);
+    }
 
-    return ResponseHandler.resBuilder("Mã OTP đã được gửi đến email của bạn", HttpStatus.OK, null);
-}
-    
-    
     @PostMapping("/verify")
     public ResponseEntity<?> verifyCode(@RequestBody VerificationRequest verificationReq) {
-          String email = verificationReq.getEmail();
-          String otp = verificationReq.getCode();
+        String email = verificationReq.getEmail();
+        String otp = verificationReq.getCode();
 
-     RestTemplate restTemplate = new RestTemplate();
-    String url = "http://localhost:8081/api/otp/verify";
-    
-    // Tạo HttpHeaders và HttpEntity
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    HttpEntity<VerificationRequest> request = new HttpEntity<>(verificationReq, headers);
-    
-    ResponseEntity<String> response;
-      try {
-        response = restTemplate.postForEntity(url, request, String.class);
-        if (response.getStatusCode() == HttpStatus.OK && "Xác thực OTP thành công".equals(response.getBody())) {
-            return ResponseHandler.resBuilder("Xác thực OTP thành công", HttpStatus.OK, null);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mã OTP không hợp lệ hoặc đã hết hạn");
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:8081/api/otp/verify";
+
+        // Tạo HttpHeaders và HttpEntity
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<VerificationRequest> request = new HttpEntity<>(verificationReq, headers);
+
+        ResponseEntity<String> response;
+        try {
+            response = restTemplate.postForEntity(url, request, String.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+
+                return ResponseHandler.resBuilder("Xác thực OTP thành công", HttpStatus.OK, null);
+            } else {
+                return ResponseHandler.resBuilder("Mã OTP không hợp lệ hoặc đã hết hạn", HttpStatus.BAD_REQUEST, null);
+            }
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Có lỗi xảy ra khi xác thực mã OTP.", HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra khi xác thực mã OTP.");
+
     }
 
-          
-}
-    
-    
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestPart("account") AccountRequest accountRequest,
-                                      @RequestPart("image") MultipartFile image) {
-        
+            @RequestPart("image") MultipartFile image) {
+
         System.out.println(accountRequest.getEmail());
-         try {
+        try {
             Account savedAccount = accountService.registerNewAccount(accountRequest, image);
             return ResponseHandler.resBuilder("User registered successfully", HttpStatus.CREATED, savedAccount);
 //        } catch (UserAlreadyExistsException e) {
@@ -198,14 +179,5 @@ public ResponseEntity<?> generateVerificationCode(@RequestBody EmailRequest emai
         } catch (Exception e) {
             return ResponseHandler.resBuilder("SOME ERROR WHEN REGISTERED", HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
-         }  
-//    
-//    public AuthenticanResponse authenticate(LoginRequest req){
-//        Account user =accountService.getAccountByEmail(req.getEmail());
-//         if (user == null) {
-//             throw new UsernameNotFoundException("USER NOT FOUND");
-//        }
-//         boolean authenticate = passwordEncoder.matches(req.getPassword(), user.getPassword());
-//         if(!authenticate) throw new AppException(ErrorCode.UNAUTHENTICATED);
-//    }
+    }
 }

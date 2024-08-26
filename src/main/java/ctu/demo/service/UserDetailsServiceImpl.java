@@ -27,22 +27,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private AccountRepository accountRepository;
 
-   @Override
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(email).orElse(null);
         if (account == null) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("Không tìm thấy tài khoản");
         }
         return new org.springframework.security.core.userdetails.User(
-            account.getEmail(),
-            account.getPassword(),
-           Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + account.getRole().name()))
+                account.getEmail(),
+                account.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + account.getRole().name()))
         );
     }
-    
+
     public boolean hasAdminAccess() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getAuthorities().stream()
-                   .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
     }
 }

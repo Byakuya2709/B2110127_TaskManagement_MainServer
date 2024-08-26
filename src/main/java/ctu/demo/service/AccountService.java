@@ -26,13 +26,12 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-    
-     @Autowired
-   private EmailService emailService;
-     
-     @Autowired
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
     public List<Account> getAllAccounts() {
         return accountRepository.findAll();
     }
@@ -44,6 +43,7 @@ public class AccountService {
     public Account getAccountById(Long id) {
         return accountRepository.findById(id).orElse(null);
     }
+
     public Account getAccountByEmail(String mail) {
         return accountRepository.findByEmail(mail).orElse(null);
     }
@@ -51,8 +51,8 @@ public class AccountService {
     public void deleteAccount(Long id) {
         accountRepository.deleteById(id);
     }
-    
-     public Account registerNewAccount(AccountRequest accountRequest, MultipartFile image) throws ParseException, IOException, Exception {
+
+    public Account registerNewAccount(AccountRequest accountRequest, MultipartFile image) throws ParseException, IOException, Exception {
 
         Account newAccount = new Account();
         newAccount.setEmail(accountRequest.getEmail());
@@ -74,8 +74,8 @@ public class AccountService {
 
         return saveAccount(newAccount);
     }
-     
-      public String generateVerificationCode() {
+
+    public String generateVerificationCode() {
         // Simple example of generating a verification code
         return String.valueOf((int) (Math.random() * 1000000));
     }

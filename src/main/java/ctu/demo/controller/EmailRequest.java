@@ -9,7 +9,7 @@ package ctu.demo.controller;
  * @author admin
  */
 public class EmailRequest {
-        private String email;
+    private String email;
 
     // Getter and Setter
     public String getEmail() {

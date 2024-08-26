@@ -12,13 +12,14 @@ import java.util.Map;
 
 @Component
 public class JwtUtil {
-    private final String SECRET_KEY = "your_secret_key"; // Thay đổi key này thành key bảo mật của bạn
-    private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 giờ
+
+    private final String SECRET_KEY = "your_secret_key";
+    private final long EXPIRATION_TIME = 1000 * 60 * 5; // 5phut
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", userDetails.getAuthorities().stream().findFirst().orElse(null).getAuthority());
-        
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
