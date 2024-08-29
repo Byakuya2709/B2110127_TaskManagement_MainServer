@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  *
@@ -47,9 +48,12 @@ public class User implements Serializable{
 //    @OneToOne(cascade = CascadeType.PERSIST)
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
-      @JsonIgnore
+    @JsonIgnore
     private Account account;
 
+    @Transient
+    private String base64Image;
+    
     @Column
     @Lob
     private byte[] avatar;

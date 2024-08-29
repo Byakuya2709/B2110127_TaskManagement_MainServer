@@ -4,7 +4,9 @@
  */
 package ctu.demo.service;
 
+import ctu.demo.model.Task;
 import ctu.demo.model.User;
+import ctu.demo.repository.TaskRepository;
 import ctu.demo.repository.UserRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private TaskRepository taskRepository;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -34,5 +39,8 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+    public List<Task> getTasksByUserId(Long userId) {
+        return taskRepository.findByUserId(userId);
     }
 }
