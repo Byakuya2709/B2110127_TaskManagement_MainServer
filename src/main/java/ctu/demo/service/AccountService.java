@@ -52,6 +52,10 @@ public class AccountService {
         accountRepository.deleteById(id);
     }
 
+    public Account findAccountByEmail(String email){
+       return accountRepository.findByEmail(email).orElse(null);
+    }
+    
     public Account registerNewAccount(AccountRequest accountRequest, MultipartFile image) throws ParseException, IOException, Exception {
 
         Account newAccount = new Account();

@@ -86,25 +86,31 @@ public class AuthController {
     private AccountService accountService;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> createToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<?> createToken(@RequestBody AuthRequest authRequest) {
         try {
             // Thực hiện xác thực người dùng
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
-            );
-
+//            authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+//            );
+           
             // Tạo JWT Token nếu xác thực thành công
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
             final String jwt = jwtUtil.generateToken(userDetails);
+            
+//            Account account = accountService.findAccountByEmail(authRequest.getEmail());        
+////            User user = userService.getUserByAccountId(account.getId());
+//
+//        // Tạo phản hồi
+//         Map<String, Object> response = new HashMap<>();
+//        response.put("token", jwt);
+//        response.put("userId", user.getId());
+//        response.put("userName", user.getFullname());
+//        response.put("role", account.getRole().name());
 
-            Map<String, String> response = new HashMap<>();
-            response.put("token", jwt);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Invalid credentials");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-        }
+        return ResponseHandler.resBuilder("Đăng nhập thành công", HttpStatus.OK, jwt);
+    } catch (Exception e) {
+        return ResponseHandler.resBuilder("Invalid credentials", HttpStatus.UNAUTHORIZED, null);
+    }
     }
 
     @PostMapping("/generate")

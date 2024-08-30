@@ -9,7 +9,9 @@ import ctu.demo.model.User;
 import ctu.demo.repository.TaskRepository;
 import ctu.demo.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 /**
@@ -42,5 +44,13 @@ public class UserService {
     }
     public List<Task> getTasksByUserId(Long userId) {
         return taskRepository.findByUserId(userId);
+    }
+      public User getUserByAccountId(Long accountId) {
+         Optional<User> userOptional = userRepository.findByAccountId(accountId);
+    if (!userOptional.isPresent()) {
+        // Ném exception hoặc xử lý tình huống không tìm thấy người dùng
+        throw new RuntimeException ("User not found"); // Hoặc xử lý khác tùy vào yêu cầu
+    }
+    return userOptional.get();
     }
 }

@@ -6,6 +6,7 @@ package ctu.demo.controller;
 
 import ctu.demo.dto.TaskDTO;
 import ctu.demo.model.Task;
+import ctu.demo.model.User;
 import ctu.demo.respone.ResponseHandler;
 import ctu.demo.service.TaskService;
 import ctu.demo.service.UserService;
@@ -36,7 +37,22 @@ public class UserController {
     @Autowired
     private UserService userService;
     
-    @PostMapping("/task")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        try {
+            User user = userService.getUserById(id);
+            if (user!=null) {
+                return ResponseHandler.resBuilder("Lấy thông tin user thành công", HttpStatus.OK, user);
+            } else {
+                return ResponseHandler.resBuilder("User không tồn tại", HttpStatus.NOT_FOUND, null);
+            }
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi lấy thông tin user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+    
+    
+    @PostMapping("/task/newtask")
     public ResponseEntity<?> createTask(@RequestBody TaskDTO task ){
         Task savedTask;
         try{
@@ -47,17 +63,8 @@ public class UserController {
       
          return ResponseHandler.resBuilder("Tạo task thành công", HttpStatus.CREATED,Task.toTaskDTO(savedTask));
     }
-    @GetMapping
-    public ResponseEntity<?> getAllTasks() {
-        List<Task> tasks = taskService.getAllTasks();
-        List<TaskDTO> DTO = new ArrayList<>();
-        for (Task task : tasks)
-            DTO.add(Task.toTaskDTO(task));
-        return ResponseHandler.resBuilder("Lấy tất cả các task thành công", HttpStatus.OK,DTO);
-    }
-
     // Lấy Task theo ID
-    @GetMapping("/user/{userId}")
+    @GetMapping("task/{userId}")
     public ResponseEntity<?> getTasksByUserId(@PathVariable Long userId) {
         List<Task> tasks = userService.getTasksByUserId(userId);
         List<TaskDTO> taskDTOs = new ArrayList<>();
@@ -68,16 +75,15 @@ public class UserController {
     }
 
     // Cập nhật một Task
-    @PutMapping("/{id}")
+    @PutMapping("/update/task/{id}")
     public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
         try {
             Task existingTask = taskService.getTaskById(id).orElseThrow(() -> new RuntimeException("Task không tồn tại"));
-            // Cập nhật thông tin cho task
             existingTask.setTitle(taskDTO.getTitle());
             existingTask.setDescription(taskDTO.getDescription());
             existingTask.setDate(taskDTO.getDate());
             existingTask.setStatus(taskDTO.getStatus());
-            existingTask.setUser(userService.getUserById(taskDTO.getUserID()));
+//            existingTask.setUser(userService.getUserById(taskDTO.getUserID()));
             Task updatedTask = taskService.saveTask(existingTask);
             return ResponseHandler.resBuilder("Cập nhật task thành công", HttpStatus.OK, Task.toTaskDTO(updatedTask));
         } catch (Exception e) {
@@ -86,7 +92,7 @@ public class UserController {
     }
 
     // Xóa một Task
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/task/{id}")
     public ResponseEntity<?> deleteTask(@PathVariable Long id) {
         try {
             taskService.deleteTask(id);
@@ -95,4 +101,6 @@ public class UserController {
             return ResponseHandler.resBuilder("Lỗi khi xóa task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
+    
+    
 }
