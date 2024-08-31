@@ -37,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -87,29 +88,43 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> createToken(@RequestBody AuthRequest authRequest) {
+        System.out.println(authRequest.getEmail()+authRequest.getPassword());
         try {
-            // Thực hiện xác thực người dùng
-//            authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
-//            );
-           
+//           System.out.println("Attempting authentication for user: " + authRequest.getEmail());
+         Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+    );
+    
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    System.out.println("Authentication successful");
             // Tạo JWT Token nếu xác thực thành công
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
             final String jwt = jwtUtil.generateToken(userDetails);
             
-//            Account account = accountService.findAccountByEmail(authRequest.getEmail());        
-////            User user = userService.getUserByAccountId(account.getId());
-//
-//        // Tạo phản hồi
-//         Map<String, Object> response = new HashMap<>();
-//        response.put("token", jwt);
-//        response.put("userId", user.getId());
-//        response.put("userName", user.getFullname());
+            Account account = accountService.findAccountByEmail(authRequest.getEmail());      
+            if (account == null) {
+            return ResponseHandler.resBuilder("Tài khoản không tồn tại", HttpStatus.NOT_FOUND, null);
+        }
+        
+
+            User user = userService.getUserByAccountId(account.getId());
+              if (user == null) {
+            return ResponseHandler.resBuilder("Người dùng không tồn tại", HttpStatus.NOT_FOUND, null);
+        }
+
+        // Tạo phản hồi
+         Map<String, Object> response = new HashMap<>();
+        response.put("token", jwt);
+        response.put("userId", user.getId());
+        response.put("userName", user.getFullname());
 //        response.put("role", account.getRole().name());
 
-        return ResponseHandler.resBuilder("Đăng nhập thành công", HttpStatus.OK, jwt);
+       
+        return ResponseHandler.resBuilder("Đăng nhập thành công", HttpStatus.OK, response);
+    } catch (BadCredentialsException e) {
+         return ResponseHandler.resBuilder("Email hoặc mật khẩu không đúng", HttpStatus.UNAUTHORIZED, null);
     } catch (Exception e) {
-        return ResponseHandler.resBuilder("Invalid credentials", HttpStatus.UNAUTHORIZED, null);
+          return ResponseHandler.resBuilder("Lỗi khi xác thực", HttpStatus.INTERNAL_SERVER_ERROR, null);
     }
     }
 
@@ -172,7 +187,6 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestPart("account") AccountRequest accountRequest,
             @RequestPart("image") MultipartFile image) {
 
-        System.out.println(accountRequest.getEmail());
         try {
             Account savedAccount = accountService.registerNewAccount(accountRequest, image);
             return ResponseHandler.resBuilder("User registered successfully", HttpStatus.CREATED, savedAccount);

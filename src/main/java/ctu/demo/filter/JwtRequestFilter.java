@@ -13,6 +13,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,7 +31,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-
+private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
     @Autowired
     private JwtUtil jwtTokenUtil;
 
@@ -50,12 +52,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtTokenUtil.extractUsername(jwtToken);
             } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT Token");
+                  logger.warn("Unable to get JWT Token");
             } catch (MalformedJwtException e) {
-                System.out.println("Invalid JWT Token");
+                logger.warn("Invalid JWT Token");
             }
         } else {
-            System.out.println("JWT Token does not begin with Bearer String");
+            logger.warn("JWT Token does not begin with Bearer String");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

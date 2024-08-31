@@ -4,6 +4,8 @@
  */
 package ctu.demo.config;
 
+import ctu.demo.exception.CustomAccessDeniedHandler;
+import ctu.demo.exception.CustomLogoutSuccessHandler;
 import ctu.demo.exception.JwtAuthenticationEntryPoint;
 import ctu.demo.filter.JwtRequestFilter;
 import ctu.demo.service.UserDetailsServiceImpl;
@@ -44,28 +46,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-      @Autowired
+    @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    
+
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-             .cors().and()
-            .csrf().disable()
-            .authorizeRequests()
-            .antMatchers("/admin/**").hasRole("ADMIN")
-            .antMatchers("/product/**").hasRole("CUSTOMER")
-            .antMatchers("/public/**").permitAll()
-            .antMatchers("/auth/**").permitAll()
-            .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-            .anyRequest().authenticated()
-            .and()
-            .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            .and()
-            .logout().permitAll();
+                .cors().and()
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/product/**").hasRole("ADMIN")
+                .antMatchers("/public/**").permitAll()
+                .antMatchers("/auth/**").permitAll()
+                .antMatchers("/login?logout").permitAll()
+                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
+                .and()
+               .logout()
+        .permitAll()
+        .logoutUrl("/logout")
+        .logoutSuccessHandler(new CustomLogoutSuccessHandler()) // Sử dụng handler tùy chỉnh
+        .invalidateHttpSession(true)
+        .deleteCookies("JSESSIONID");
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
@@ -89,5 +101,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return authProvider;
     }
 
- 
 }
