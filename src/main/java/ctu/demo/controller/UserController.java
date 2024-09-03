@@ -55,9 +55,15 @@ public class UserController {
     @PostMapping("/task/newtask")
     public ResponseEntity<?> createTask(@RequestBody TaskDTO task ){
         Task savedTask;
+        Optional<Task> findedTask =taskService.getTaskByTitle(task.getTitle());
+        if (findedTask.isPresent()) {
+        return ResponseHandler.resBuilder("Task này đã tồn tại", HttpStatus.CONFLICT, null);
+    }
         try{
+            
              savedTask = taskService.saveTask(task);
         }catch(Exception e){
+           e.printStackTrace();
            return ResponseHandler.resBuilder("Lỗi khi tạo một task mới", HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
       

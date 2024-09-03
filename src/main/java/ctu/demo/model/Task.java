@@ -107,14 +107,13 @@ public class Task implements Serializable{
     }
     public static TaskDTO toTaskDTO(Task task) {
         TaskDTO taskDTO = new TaskDTO();
-        taskDTO.setId(task.getId());
         taskDTO.setTitle(task.getTitle());
         taskDTO.setDescription(task.getDescription());
         taskDTO.setDate(task.getDate());
         taskDTO.setStatus(task.getStatus());
         
-        taskDTO.setUserID(task.getUser().getId());
-        taskDTO.setUserName(task.getUser().getFullname());
+        taskDTO.setUserId(task.getUser().getId().intValue());
+        
         return taskDTO;
     }
 }

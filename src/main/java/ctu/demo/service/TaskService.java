@@ -33,11 +33,13 @@ public class TaskService {
     public Optional<Task> getTaskById(Long id) {
         return taskRepository.findById(id);
     }
+     // Lấy task theo ID
+    public Optional<Task> getTaskByTitle(String title) {
+        return taskRepository.findByTitle(title);
+    }
 
     // Thêm hoặc cập nhật một task
-    public Task saveTask(Task task) {
-        return taskRepository.save(task);
-    }
+   
      public Task saveTask(TaskDTO taskDTO) {
         Task task = this.toTask(taskDTO);
         return taskRepository.save(task);
@@ -46,15 +48,18 @@ public class TaskService {
     public void deleteTask(Long id) {
         taskRepository.deleteById(id);
     }
+     public Task saveTask(Task task) {
+        return taskRepository.save(task);
+    }
+    
      public  Task toTask(TaskDTO taskDTO) {
         Task task = new Task();
-        task.setId(taskDTO.getId());
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
         task.setDate(taskDTO.getDate());
         task.setStatus(taskDTO.getStatus());
         
-        User user = userService.getUserById(taskDTO.getUserID());
+        User user = userService.getUserById(Long.valueOf(taskDTO.getUserId()));
         if (user != null) {
             task.setUser(user);
         } else {

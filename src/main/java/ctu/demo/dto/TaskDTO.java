@@ -14,8 +14,6 @@ import java.util.Date;
  */
 public class TaskDTO {
 
-    private Long id;
-  
     private String title;
 
     private String description;
@@ -24,17 +22,8 @@ public class TaskDTO {
     
     private TaskStatus status;
     
-    private Long userID;
+    private int userId;
     
-    private String userName;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;
@@ -68,20 +57,19 @@ public class TaskDTO {
         this.status = status;
     }
 
-    public Long getUserID() {
-        return userID;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUserID(Long userID) {
-        this.userID = userID;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public String getUserName() {
-        return userName;
-    }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+
+    @Override
+    public String toString() {
+        return "TaskDTO{" + "title=" + title + ", description=" + description + ", date=" + date + ", status=" + status + ", userId=" + userId + '}';
     }
     
   
