@@ -5,6 +5,7 @@
 package ctu.demo.controller;
 
 import ctu.demo.dto.TaskDTO;
+import ctu.demo.dto.TaskResponse;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
 import ctu.demo.respone.ResponseHandler;
@@ -67,15 +68,15 @@ public class UserController {
            return ResponseHandler.resBuilder("Lỗi khi tạo một task mới", HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
       
-         return ResponseHandler.resBuilder("Tạo task thành công", HttpStatus.CREATED,Task.toTaskDTO(savedTask));
+         return ResponseHandler.resBuilder("Tạo task thành công", HttpStatus.CREATED,Task.toTaskResponse(savedTask));
     }
     // Lấy Task theo ID
     @GetMapping("task/{userId}")
     public ResponseEntity<?> getTasksByUserId(@PathVariable Long userId) {
         List<Task> tasks = userService.getTasksByUserId(userId);
-        List<TaskDTO> taskDTOs = new ArrayList<>();
+        List<TaskResponse> taskDTOs = new ArrayList<>();
         for (Task task : tasks) {
-            taskDTOs.add(Task.toTaskDTO(task));
+            taskDTOs.add(Task.toTaskResponse(task));
         }
         return ResponseHandler.resBuilder("Lấy tất cả các task theo userID thành công", HttpStatus.OK, taskDTOs);
     }
@@ -91,7 +92,7 @@ public class UserController {
             existingTask.setStatus(taskDTO.getStatus());
 //            existingTask.setUser(userService.getUserById(taskDTO.getUserID()));
             Task updatedTask = taskService.saveTask(existingTask);
-            return ResponseHandler.resBuilder("Cập nhật task thành công", HttpStatus.OK, Task.toTaskDTO(updatedTask));
+            return ResponseHandler.resBuilder("Cập nhật task thành công", HttpStatus.OK, Task.toTaskResponse(updatedTask));
         } catch (Exception e) {
             return ResponseHandler.resBuilder("Lỗi khi cập nhật task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }

@@ -6,6 +6,7 @@ package ctu.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ctu.demo.dto.TaskDTO;
+import ctu.demo.dto.TaskResponse;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -113,6 +114,19 @@ public class Task implements Serializable{
         taskDTO.setStatus(task.getStatus());
         
         taskDTO.setUserId(task.getUser().getId().intValue());
+        
+        return taskDTO;
+    }
+     public static TaskResponse toTaskResponse(Task task) {
+        TaskResponse taskDTO = new TaskResponse();
+        taskDTO.setId(task.getId());
+        taskDTO.setTitle(task.getTitle());
+        taskDTO.setDescription(task.getDescription());
+        taskDTO.setDate(task.getDate());
+        taskDTO.setStatus(task.getStatus());
+        
+        taskDTO.setUserId(task.getUser().getId().intValue());
+        taskDTO.setUserName(task.getUser().getFullname());
         
         return taskDTO;
     }

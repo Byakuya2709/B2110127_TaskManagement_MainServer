@@ -5,6 +5,7 @@
 package ctu.demo.exception;
 
 import ctu.demo.respone.APIResponse;
+import ctu.demo.respone.ResponseHandler;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,11 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
  */
 @ControllerAdvice
 public class globalException {
-
+    
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeExceptions(Exception ex, WebRequest request) {
+       return ResponseHandler.resBuilder(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
         Map<String, Object> errorResponse = new HashMap<>();
@@ -35,8 +40,8 @@ public class globalException {
         errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.put("timestamp", LocalDateTime.now()); // Thêm thời gian lỗi xảy ra
         errorResponse.put("path", request.getDescription(false)); // Thêm đường dẫn yêu cầu
+    return ResponseHandler.resBuilder(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, errorResponse);
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ClientAbortException.class)
@@ -52,11 +57,7 @@ public class globalException {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<Object> handleUserNotFoundExceptions(UsernameNotFoundException ex, WebRequest request) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("message", ex.getMessage());
-        errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+         return ResponseHandler.resBuilder(ex.getMessage(), HttpStatus.BAD_REQUEST, null);
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
