@@ -9,6 +9,7 @@
     <class>ctu.demo.model.Account</class>
     <class>ctu.demo.model.User</class>
     <class>ctu.demo.model.Task</class>
+    <class>ctu.demo.model.Comment</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/testjdbc?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="javax.persistence.jdbc.user" value="root"/>
