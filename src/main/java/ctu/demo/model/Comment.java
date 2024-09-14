@@ -91,7 +91,7 @@ public class Comment implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    public CommentDTO toCommentDTO(Comment cmt){
+    public static CommentDTO toCommentDTO(Comment cmt){
         CommentDTO cmtDTO= new CommentDTO();
         cmtDTO.setId(cmt.getId());
         cmtDTO.setContent(cmt.getContent());

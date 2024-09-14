@@ -59,5 +59,10 @@ public class CommentDTO {
     public void setTaskId(Long taskId) {
         this.taskId = taskId;
     }
+
+    @Override
+    public String toString() {
+        return "CommentDTO{" + "id=" + id + ", content=" + content + ", createdDate=" + createdDate + ", userId=" + userId + ", taskId=" + taskId + '}';
+    }
     
 }

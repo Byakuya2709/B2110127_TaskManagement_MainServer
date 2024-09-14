@@ -132,6 +132,5 @@ public ResponseEntity<?> deleteTask(@PathVariable Long id) {
         return ResponseHandler.resBuilder("Lỗi khi xóa task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
     }
 }
-    
-    
+ 
 }

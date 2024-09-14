@@ -95,28 +95,31 @@ public class AuthController {
             new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
     );
     
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    System.out.println("Authentication successful");
-            // Tạo JWT Token nếu xác thực thành công
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
-            final String jwt = jwtUtil.generateToken(userDetails);
-            
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            System.out.println("Authentication successful");
             Account account = accountService.findAccountByEmail(authRequest.getEmail());      
-            if (account == null) {
+                if (account == null) {
             return ResponseHandler.resBuilder("Tài khoản không tồn tại", HttpStatus.NOT_FOUND, null);
         }
         
+//            User user = userService.getUserByAccountId(account.getId());
+//              if (user == null) {
+//            return ResponseHandler.resBuilder("Người dùng không tồn tại", HttpStatus.NOT_FOUND, null);
+//           
+//        }
 
-            User user = userService.getUserByAccountId(account.getId());
-              if (user == null) {
-            return ResponseHandler.resBuilder("Người dùng không tồn tại", HttpStatus.NOT_FOUND, null);
-        }
+            // Tạo JWT Token nếu xác thực thành công
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
+            
+            final String jwt = jwtUtil.generateToken(userDetails,account.getUser().getId(),account.getUser().getFullname());
+            
+           
 
         // Tạo phản hồi
          Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
-        response.put("userId", user.getId());
-        response.put("userName", user.getFullname());
+        response.put("userId",account.getUser().getId());
+        response.put("userName",account.getUser().getFullname());
 //        response.put("role", account.getRole().name());
 
        

@@ -4,11 +4,14 @@
  */
 package ctu.demo.controller;
 
+import ctu.demo.dto.CommentDTO;
 import ctu.demo.dto.TaskDTO;
 import ctu.demo.dto.TaskResponse;
+import ctu.demo.model.Comment;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
 import ctu.demo.respone.ResponseHandler;
+import ctu.demo.service.CommentService;
 import ctu.demo.service.TaskService;
 import ctu.demo.service.UserService;
 import java.util.ArrayList;
@@ -39,7 +42,8 @@ public class AdminController {
     private TaskService taskService;
     @Autowired
     private UserService userService;
-    
+    @Autowired
+    private CommentService commentService;
     @GetMapping("/task/all")
     public ResponseEntity<?> getAllTasks() {
         List<Task> tasks = taskService.getAllTasks();
@@ -56,6 +60,15 @@ public class AdminController {
             return ResponseHandler.resBuilder("Lấy danh sách tất cả user thành công", HttpStatus.OK, users);
         } catch (Exception e) {
             return ResponseHandler.resBuilder("Lỗi khi lấy danh sách user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+    @GetMapping("/task/user/{userId}")
+    public ResponseEntity<?> getTasksOfUsers(@PathVariable long userId,@PathVariable long taskId ) {
+        try {
+           List<Task> tasks = userService.getTasksByUserId(userId);
+            return ResponseHandler.resBuilder("Lấy danh sách tất cả task của user thành công", HttpStatus.OK, tasks);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi lấy danh sách task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
     @GetMapping("/task/{id}")
@@ -93,7 +106,7 @@ public class AdminController {
       
          return ResponseHandler.resBuilder("Tạo task thành công", HttpStatus.CREATED,Task.toTaskResponse(savedTask));
     }
-    @PutMapping("/task/updata/{id}")
+    @PutMapping("/task/update/{id}")
     public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
         try {
             Task existingTask = taskService.getTaskById(id).orElseThrow(() -> new RuntimeException("Task không tồn tại"));
@@ -113,6 +126,42 @@ public class AdminController {
             return ResponseHandler.resBuilder("Cập nhật task thành công", HttpStatus.OK, Task.toTaskResponse(updatedTask));
         } catch (Exception e) {
             return ResponseHandler.resBuilder("Lỗi khi cập nhật task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+    
+     @PostMapping("/task/comment/{taskId}")
+     public ResponseEntity<?> createComment(@PathVariable Long taskId,@RequestBody CommentDTO cmtDTO) {
+        Task task;
+        Optional<Task> findedTask =taskService.getTaskById(taskId);
+            if (findedTask.isEmpty()) {
+        return ResponseHandler.resBuilder("Task không tồn tại", HttpStatus.CONFLICT, null);
+    }
+        try {
+             Comment cmt = commentService.saveComment(taskId,cmtDTO);
+            return ResponseHandler.resBuilder("Lấy task theo id thành công", HttpStatus.OK,cmt.toCommentDTO(cmt));
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi lấy task theo id: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+      @GetMapping("/task/comment/{taskId}")
+     public ResponseEntity<?> getAllComment(@PathVariable Long taskId) {
+        Task task;
+        Optional<Task> findedTask =taskService.getTaskById(taskId);
+            if (findedTask.isEmpty()) {
+        return ResponseHandler.resBuilder("Task không tồn tại", HttpStatus.CONFLICT, null);
+    }
+        try {
+             // Lấy tất cả các comment liên quan đến taskId
+        List<Comment> comments = commentService.getCommentByTaskId(taskId);
+        
+        // Chuyển đổi từ Comment sang CommentDTO
+        List<CommentDTO> commentDTOs = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentDTOs.add(comment.toCommentDTO(comment));
+        }
+            return ResponseHandler.resBuilder("Lấy tất cả comment theo task thành công", HttpStatus.OK,commentDTOs);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi lấy comment theo task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
 }
