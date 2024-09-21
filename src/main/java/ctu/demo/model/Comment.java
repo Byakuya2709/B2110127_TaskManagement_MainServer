@@ -98,6 +98,9 @@ public class Comment implements Serializable {
         cmtDTO.setCreatedDate(cmt.getCreatedDate());
         
         cmtDTO.setTaskId(cmt.getTask().getId());
+        cmtDTO.setUserName(cmt.getUser().getFullname());
+        cmtDTO.setTaskTitle(cmt.getTask().getTitle());
+       
         cmtDTO.setUserId(cmt.getUser().getId());
         
         return cmtDTO;

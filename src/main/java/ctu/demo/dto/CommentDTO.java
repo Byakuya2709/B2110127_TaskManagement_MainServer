@@ -15,7 +15,9 @@ public class CommentDTO {
     private String content;
     private Date createdDate;
     private Long userId;
+    private String userName;
     private Long taskId;
+    private String taskTitle;
 
     public CommentDTO() {
     }
@@ -60,9 +62,27 @@ public class CommentDTO {
         this.taskId = taskId;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getTaskTitle() {
+        return taskTitle;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setTaskTitle(String taskTitle) {
+        this.taskTitle = taskTitle;
+    }
+
     @Override
     public String toString() {
-        return "CommentDTO{" + "id=" + id + ", content=" + content + ", createdDate=" + createdDate + ", userId=" + userId + ", taskId=" + taskId + '}';
+        return "CommentDTO{" + "id=" + id + ", content=" + content + ", createdDate=" + createdDate + ", userId=" + userId + ", userName=" + userName + ", taskId=" + taskId + ", taskTitle=" + taskTitle + '}';
     }
+    
+   
     
 }
