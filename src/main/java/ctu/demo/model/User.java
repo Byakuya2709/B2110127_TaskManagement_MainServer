@@ -46,16 +46,20 @@ public class User implements Serializable{
     private Gender gender;
 
 //    @OneToOne(cascade = CascadeType.PERSIST)
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     @JsonIgnore
     private Account account;
 
+    @Column(columnDefinition = "varchar(255) default 'Nhân viên công ty'")
+    private String detail;
+    
     @Transient
     private String base64Image;
     
     @Column
     @Lob
+    @JsonIgnore
     private byte[] avatar;
     
     public enum Gender {
@@ -64,6 +68,7 @@ public class User implements Serializable{
     }
 
     public User() {
+        
     }
 
     public User(String fullname, Date birth, String address, Gender gender) {
@@ -127,6 +132,22 @@ public class User implements Serializable{
 
     public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
+
+    public String getBase64Image() {
+        return base64Image;
+    }
+
+    public void setBase64Image(String base64Image) {
+        this.base64Image = base64Image;
     }
     
     

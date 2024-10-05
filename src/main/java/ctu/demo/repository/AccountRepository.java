@@ -5,8 +5,10 @@
 package ctu.demo.repository;
 
 import ctu.demo.model.Account;
+
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.stereotype.Repository;
 
 /**
@@ -17,5 +19,6 @@ import org.springframework.stereotype.Repository;
 public interface  AccountRepository extends JpaRepository<Account, Long> {
 
     public Optional<Account> findByEmail(String username);
+    
     
 }

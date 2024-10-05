@@ -7,6 +7,7 @@ package ctu.demo.controller;
 import ctu.demo.dto.CommentDTO;
 import ctu.demo.dto.TaskDTO;
 import ctu.demo.dto.TaskResponse;
+import ctu.demo.dto.UserDTO;
 import ctu.demo.model.Comment;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -56,12 +58,30 @@ public class AdminController {
     @GetMapping("/user/all")
     public ResponseEntity<?> getAllUsers() {
         try {
-            List<User> users = userService.getAllUsers();
-            return ResponseHandler.resBuilder("Lấy danh sách tất cả user thành công", HttpStatus.OK, users);
+            List<User> users = userService.getUserNotHasRoleAdmin();
+            List<UserDTO> listUsersResponse = new ArrayList<>();
+            for (User user : users){
+                listUsersResponse.add(UserDTO.convertToDto(user));
+            }
+            return ResponseHandler.resBuilder("Lấy danh sách tất cả user thành công", HttpStatus.OK, listUsersResponse);
         } catch (Exception e) {
             return ResponseHandler.resBuilder("Lỗi khi lấy danh sách user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
+ @DeleteMapping("/delete/user/{id}")
+public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+    try {
+        User user = userService.getUserById(id);
+        if (user != null) {
+            userService.deleteUser(id);
+            return ResponseHandler.resBuilder("Xóa người dùng thành công", HttpStatus.OK, user);
+        } else {
+            return ResponseHandler.resBuilder("Người dùng không tồn tại", HttpStatus.NOT_FOUND, null);
+        }
+    } catch (Exception e) {
+        return ResponseHandler.resBuilder("Lỗi khi xóa người dùng: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+    }
+}
     @GetMapping("/task/user/{userId}")
     public ResponseEntity<?> getTasksOfUsers(@PathVariable long userId,@PathVariable long taskId ) {
         try {

@@ -4,6 +4,7 @@
  */
 package ctu.demo.service;
 
+import ctu.demo.model.Account.Role;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
 import ctu.demo.repository.TaskRepository;
@@ -30,7 +31,9 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
-
+    public List<User> getUserNotHasRoleAdmin() {
+        return userRepository.findUserNotHasRoleAdmin(Role.ADMIN);
+    }
     public User saveUser(User user) {
         return userRepository.save(user);
     }

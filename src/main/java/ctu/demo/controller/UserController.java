@@ -7,6 +7,7 @@ package ctu.demo.controller;
 import ctu.demo.dto.CommentDTO;
 import ctu.demo.dto.TaskDTO;
 import ctu.demo.dto.TaskResponse;
+import ctu.demo.dto.UserDTO;
 import ctu.demo.model.Comment;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
@@ -50,8 +51,9 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
             User user = userService.getUserById(id);
+            UserDTO res = UserDTO.convertToDto(user);
             if (user!=null) {
-                return ResponseHandler.resBuilder("Lấy thông tin user thành công", HttpStatus.OK, user);
+                return ResponseHandler.resBuilder("Lấy thông tin user thành công", HttpStatus.OK, res);
             } else {
                 return ResponseHandler.resBuilder("User không tồn tại", HttpStatus.NOT_FOUND, null);
             }

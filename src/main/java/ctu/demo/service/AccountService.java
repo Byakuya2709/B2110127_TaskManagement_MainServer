@@ -67,7 +67,7 @@ public class AccountService {
         newUser.setBirth(accountRequest.getBirthdayDate(accountRequest.getBirth()));
         newUser.setFullname(accountRequest.getFullname());
         newUser.setGender(User.Gender.valueOf(accountRequest.getGender()));
-
+        newUser.setDetail("Nhân viên công ty");
         if (image != null && !image.isEmpty()) {
             byte[] bytes = image.getBytes();
             newUser.setAvatar(bytes);
@@ -79,8 +79,8 @@ public class AccountService {
         return saveAccount(newAccount);
     }
 
-    public String generateVerificationCode() {
-        // Simple example of generating a verification code
-        return String.valueOf((int) (Math.random() * 1000000));
-    }
+//    public String generateVerificationCode() {
+//        // Simple example of generating a verification code
+//        return String.valueOf((int) (Math.random() * 1000000));
+//    }
 }
