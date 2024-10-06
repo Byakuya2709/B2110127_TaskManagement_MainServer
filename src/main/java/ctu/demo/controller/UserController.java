@@ -78,7 +78,7 @@ public class UserController {
 }
 
     // Lấy Task theo ID
-   @GetMapping("/{userId}/task")
+   @GetMapping("/{userId}/tasks")
     public ResponseEntity<?> getTasksByUserId(@PathVariable Long userId) {
     List<Task> tasks = userService.getTasksByUserId(userId);
     List<TaskResponse> taskDTOs = new ArrayList<>();
