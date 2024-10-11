@@ -44,7 +44,7 @@ public class Account implements Serializable,UserDetails {
     private Role role = Role.CUSTOMER;
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JsonIgnore
+//    @JsonIgnore
     private User user;
 
     @Override

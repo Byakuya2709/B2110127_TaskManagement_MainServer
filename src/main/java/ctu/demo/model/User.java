@@ -59,7 +59,6 @@ public class User implements Serializable{
     
     @Column
     @Lob
-    @JsonIgnore
     private byte[] avatar;
     
     public enum Gender {

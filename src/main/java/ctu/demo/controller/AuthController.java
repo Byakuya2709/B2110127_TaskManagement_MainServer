@@ -8,6 +8,7 @@ import ctu.demo.utils.JwtUtil;
 import ctu.demo.respone.AuthenticanResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ctu.demo.dto.AccountRequest;
+import ctu.demo.dto.UserDTO;
 import ctu.demo.exception.AppException;
 import ctu.demo.exception.ErrorCode;
 import ctu.demo.model.Account;
@@ -120,6 +121,7 @@ public class AuthController {
         response.put("token", jwt);
         response.put("userId",account.getUser().getId());
         response.put("userName",account.getUser().getFullname());
+        response.put("avatar",UserDTO.encodeImageToBase64(account.getUser().getAvatar()));
 //        response.put("role", account.getRole().name());
 
        

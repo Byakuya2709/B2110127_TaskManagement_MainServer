@@ -8,10 +8,12 @@ import ctu.demo.dto.CommentDTO;
 import ctu.demo.dto.TaskDTO;
 import ctu.demo.dto.TaskResponse;
 import ctu.demo.dto.UserDTO;
+import ctu.demo.model.Account;
 import ctu.demo.model.Comment;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
 import ctu.demo.respone.ResponseHandler;
+import ctu.demo.service.AccountService;
 import ctu.demo.service.CommentService;
 import ctu.demo.service.TaskService;
 import ctu.demo.service.UserService;
@@ -39,7 +41,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-    
+     @Autowired
+    private AccountService accountService;
     @Autowired
     private TaskService taskService;
     @Autowired
@@ -53,6 +56,14 @@ public class AdminController {
         for (Task task : tasks)
             DTO.add(Task.toTaskResponse(task));
         return ResponseHandler.resBuilder("Lấy tất cả các task thành công", HttpStatus.OK,DTO);
+    }
+    @GetMapping("/account")
+    public ResponseEntity<?> getAcount() {
+       Account account = accountService.findAccountByEmail("khanhnguyen147348@gmail.com");      
+                if (account == null) {
+            return ResponseHandler.resBuilder("Tài khoản không tồn tại", HttpStatus.NOT_FOUND, null);
+        }
+        return ResponseHandler.resBuilder("Lấy tất cả các task thành công", HttpStatus.OK,account);
     }
     
     @GetMapping("/user/all")
