@@ -42,7 +42,12 @@ public class Task implements Serializable{
     
     @Column
     private TaskStatus status;
+    
+    @Column
+    private Date createdDate; // Ngày tạo nhiệm vụ
 
+    @Column
+    private Date updatedDate; // Ngày cập nhật nhiệm vụ
     
     @ManyToOne
     @JoinColumn(name="user_id")
@@ -65,6 +70,8 @@ public class Task implements Serializable{
     }
 
     public Task() {
+        this.createdDate = new Date();
+        this.updatedDate = new Date();
     }
 
     public String getTitle() {
@@ -106,6 +113,24 @@ public class Task implements Serializable{
     public void setUser(User user) {
         this.user = user;
     }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+    
+    
     public static TaskDTO toTaskDTO(Task task) {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTitle(task.getTitle());
@@ -127,7 +152,9 @@ public class Task implements Serializable{
         
         taskDTO.setUserId(task.getUser().getId().intValue());
         taskDTO.setUserName(task.getUser().getFullname());
-        
+        taskDTO.setCreatedDate(task.getCreatedDate());
+        taskDTO.setUpdatedDate(task.getCreatedDate());
+                
         return taskDTO;
     }
 }

@@ -69,5 +69,23 @@ public class TaskService {
         
         return task;
     }
-     
+     // Thống kê số lượng nhiệm vụ theo trạng thái
+    public long countTasksByStatus(Task.TaskStatus status) {
+        return taskRepository.countByStatus(status);
+    }
+
+    // Thống kê số lượng nhiệm vụ theo người dùng
+    public long countTasksByUser(User user) {
+        return taskRepository.countByUser(user);
+    }
+
+    // Thống kê số lượng nhiệm vụ hoàn thành theo người dùng
+    public long countCompletedTasksByUser(User user) {
+        return taskRepository.countByUserAndStatus(user, Task.TaskStatus.COMPLETED);
+    }
+
+    // Lấy danh sách nhiệm vụ theo trạng thái
+    public List<Task> getTasksByStatus(Task.TaskStatus status) {
+        return taskRepository.findByStatus(status);
+    }
 }

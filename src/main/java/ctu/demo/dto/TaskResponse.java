@@ -26,6 +26,10 @@ public class TaskResponse {
     
     private String userName;
 
+    private Date createdDate; // Ngày tạo nhiệm vụ
+
+    private Date updatedDate;
+    
     public TaskResponse() {
     }
 
@@ -39,6 +43,22 @@ public class TaskResponse {
 
     public String getDescription() {
         return description;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
     public void setDescription(String description) {

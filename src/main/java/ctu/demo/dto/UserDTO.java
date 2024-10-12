@@ -21,7 +21,7 @@ public class UserDTO {
     private Gender gender;
     private String base64Image; 
     private String detail;
-    
+    private User.UserStatus status;
    public static UserDTO convertToDto(User user) {
     UserDTO dto = new UserDTO();
     dto.setId(user.getId());
@@ -30,7 +30,7 @@ public class UserDTO {
     dto.setAddress(user.getAddress());
     dto.setGender(user.getGender());
     dto.setDetail(user.getDetail());
-
+    dto.setStatus(user.getStatus());
     // Chuyển đổi avatar sang base64
     if (user.getAvatar() != null) {
         dto.setBase64Image(encodeImageToBase64(user.getAvatar()));  // Gọi trực tiếp phương thức encodeImageToBase64
@@ -43,6 +43,14 @@ public static String encodeImageToBase64(byte[] imageBytes) {
 }
     public Long getId() {
         return id;
+    }
+
+    public User.UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(User.UserStatus status) {
+        this.status = status;
     }
 
     public void setId(Long id) {

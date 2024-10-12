@@ -24,9 +24,28 @@ public class TaskDTO {
     
     private int userId;
     
+    private Date createdDate; // Ngày tạo nhiệm vụ
+
+    private Date updatedDate; // Ngày cập nhật nhiệm vụ
 
     public String getTitle() {
         return title;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
     public void setTitle(String title) {

@@ -45,6 +45,18 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+    
+    /**
+     * Count the number of active users.
+     *
+     * @return Number of active users
+     */
+    public long countActiveUsers() {
+        return userRepository.countByStatus(User.UserStatus.ACTIVE);
+    }
+     public long countInactiveUsers() {
+        return userRepository.countByStatus(User.UserStatus.INACTIVE);
+    }
     public List<Task> getTasksByUserId(Long userId) {
         return taskRepository.findByUserId(userId);
     }

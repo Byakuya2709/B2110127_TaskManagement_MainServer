@@ -54,8 +54,14 @@ public class User implements Serializable{
     @Column(columnDefinition = "varchar(255) default 'Nhân viên công ty'")
     private String detail;
     
+    @Column
+    private UserStatus status;
+    
     @Transient
     private String base64Image;
+    
+    @Transient
+    private int taskCount; // Số lượng nhiệm vụ của người dùng
     
     @Column
     @Lob
@@ -65,8 +71,13 @@ public class User implements Serializable{
         MALE,
         FEMALE
     }
+    public enum UserStatus {
+        ACTIVE,
+        INACTIVE
+    }
 
     public User() {
+        this.status =UserStatus.ACTIVE;
         
     }
 
@@ -147,6 +158,22 @@ public class User implements Serializable{
 
     public void setBase64Image(String base64Image) {
         this.base64Image = base64Image;
+    }
+
+    public int getTaskCount() {
+        return taskCount;
+    }
+
+    public void setTaskCount(int taskCount) {
+        this.taskCount = taskCount;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
     }
     
     

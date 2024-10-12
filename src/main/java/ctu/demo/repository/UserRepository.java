@@ -23,4 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      Optional<User> findByAccountId(Long accountId);
      @Query("SELECT u FROM User u WHERE u.account.role <> :role")
     List<User> findUserNotHasRoleAdmin(@Param("role") Account.Role role);
+    //đếm số lượng nhân viên còn hoạt động
+    long countByStatus(User.UserStatus status);
+    
 }

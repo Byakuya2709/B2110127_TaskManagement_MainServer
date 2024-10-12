@@ -18,6 +18,7 @@ import ctu.demo.service.CommentService;
 import ctu.demo.service.TaskService;
 import ctu.demo.service.UserService;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,6 +146,7 @@ public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
             existingTask.setDescription(taskDTO.getDescription());
             existingTask.setDate(taskDTO.getDate());
             existingTask.setStatus(taskDTO.getStatus());
+            existingTask.setUpdatedDate(new Date());
             
             User user = userService.getUserById(Long.valueOf(taskDTO.getUserId()));
             
