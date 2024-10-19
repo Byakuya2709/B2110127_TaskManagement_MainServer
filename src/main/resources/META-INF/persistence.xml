@@ -2,14 +2,11 @@
 <persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence           http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
   <persistence-unit name="ctu.demo_demo_jar_0.0.1-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <class>ctu.demo.model.ProductType</class>
-    <class>ctu.demo.model.Product</class>
-    <class>ctu.demo.model.ProductSize</class>
-    <class>ctu.demo.model.Image</class>
     <class>ctu.demo.model.Account</class>
     <class>ctu.demo.model.User</class>
     <class>ctu.demo.model.Task</class>
     <class>ctu.demo.model.Comment</class>
+    <class>ctu.demo.model.Group</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/testjdbc?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="javax.persistence.jdbc.user" value="root"/>

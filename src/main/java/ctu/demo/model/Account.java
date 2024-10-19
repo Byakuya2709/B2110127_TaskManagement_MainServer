@@ -41,7 +41,7 @@ public class Account implements Serializable,UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.CUSTOMER;
+    private Role role;
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 //    @JsonIgnore

@@ -5,22 +5,27 @@
 package ctu.demo.controller;
 
 import ctu.demo.dto.CommentDTO;
+import ctu.demo.dto.GroupDTO;
 import ctu.demo.dto.TaskDTO;
 import ctu.demo.dto.TaskResponse;
 import ctu.demo.dto.UserDTO;
 import ctu.demo.model.Account;
 import ctu.demo.model.Comment;
+import ctu.demo.model.Group;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
+import ctu.demo.request.GroupRequest;
 import ctu.demo.respone.ResponseHandler;
 import ctu.demo.service.AccountService;
 import ctu.demo.service.CommentService;
+import ctu.demo.service.GroupService;
 import ctu.demo.service.TaskService;
 import ctu.demo.service.UserService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  *
@@ -50,6 +56,9 @@ public class AdminController {
     private UserService userService;
     @Autowired
     private CommentService commentService;
+     @Autowired
+    private GroupService groupService;
+    
     @GetMapping("/task/all")
     public ResponseEntity<?> getAllTasks() {
         List<Task> tasks = taskService.getAllTasks();
@@ -57,6 +66,46 @@ public class AdminController {
         for (Task task : tasks)
             DTO.add(Task.toTaskResponse(task));
         return ResponseHandler.resBuilder("Lấy tất cả các task thành công", HttpStatus.OK,DTO);
+    }
+    @GetMapping("/group/{id}")
+    public ResponseEntity<?> getUserOfGroup(@PathVariable("id") Long id) {
+       Group group = groupService.findById(id);
+     if (group == null) {
+            return ResponseHandler.resBuilder("Nhóm không tồn tại", HttpStatus.NOT_FOUND, null);
+        }
+        List<User> users = userService.getAllUsersGroup(group);
+        return ResponseHandler.resBuilder("Lấy tất cả các task thành công", HttpStatus.OK,users);
+    }
+    @PostMapping("/group/create")
+    public ResponseEntity<?> createGroup(@RequestBody GroupRequest groupRequest) {
+        try {
+            System.out.println(groupRequest);
+            Group newGroup = groupService.createGroup(groupRequest);
+            return ResponseHandler.resBuilder("Group created successfully", HttpStatus.CREATED, newGroup);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Error creating group: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+    @GetMapping("/group/all")
+    public ResponseEntity<?> getAllGroup() {
+      try {
+        List<Group> groups = groupService.getAllGroups();
+
+        if (groups == null || groups.isEmpty()) {
+            return ResponseHandler.resBuilder("Nhóm không tồn tại", HttpStatus.NOT_FOUND, null);
+        }
+
+        // Sử dụng stream để chuyển đổi danh sách Group thành GroupDTO
+        List<GroupDTO> groupsDTO = groups.stream()
+            .map(GroupDTO::convertToDto)
+            .collect(Collectors.toList());
+
+        return ResponseHandler.resBuilder("Lấy tất cả các nhóm thành công", HttpStatus.OK, groupsDTO);
+    } catch (MethodArgumentTypeMismatchException e) {
+        return ResponseHandler.resBuilder("Giá trị tham số không hợp lệ", HttpStatus.BAD_REQUEST, null);
+    } catch (Exception e) {
+        return ResponseHandler.resBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+    }
     }
     @GetMapping("/account")
     public ResponseEntity<?> getAcount() {

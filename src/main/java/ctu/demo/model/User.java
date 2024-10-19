@@ -12,11 +12,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -54,6 +56,11 @@ public class User implements Serializable{
     @Column(columnDefinition = "varchar(255) default 'Nhân viên công ty'")
     private String detail;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable=true) // group_id có thể null
+    @JsonIgnore
+    private Group group; // Người dùng có thể thuộc về 0 hoặc 1 nhóm
+    
     @Column
     private UserStatus status;
     
@@ -86,6 +93,14 @@ public class User implements Serializable{
         this.birth = birth;
         this.address = address;
         this.gender = gender;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public Long getId() {
@@ -174,6 +189,11 @@ public class User implements Serializable{
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" + "id=" + id + ", fullname=" + fullname + ", birth=" + birth + ", address=" + address + ", gender=" + gender + ", account=" + account + ", detail=" + detail + ", group=" + group + ", status=" + status + ", base64Image=" + base64Image + ", taskCount=" + taskCount + ", avatar=" + avatar + '}';
     }
     
     

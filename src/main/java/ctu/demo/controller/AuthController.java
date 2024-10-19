@@ -102,18 +102,12 @@ public class AuthController {
                 if (account == null) {
             return ResponseHandler.resBuilder("Tài khoản không tồn tại", HttpStatus.NOT_FOUND, null);
         }
-        
-//            User user = userService.getUserByAccountId(account.getId());
-//              if (user == null) {
-//            return ResponseHandler.resBuilder("Người dùng không tồn tại", HttpStatus.NOT_FOUND, null);
-//           
-//        }
 
             // Tạo JWT Token nếu xác thực thành công
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
             
             final String jwt = jwtUtil.generateToken(userDetails,account.getUser().getId(),account.getUser().getFullname());
-            
+            System.out.println(jwt);
            
 
         // Tạo phản hồi
@@ -121,7 +115,8 @@ public class AuthController {
         response.put("token", jwt);
         response.put("userId",account.getUser().getId());
         response.put("userName",account.getUser().getFullname());
-        response.put("avatar",UserDTO.encodeImageToBase64(account.getUser().getAvatar()));
+        if (account.getUser().getAvatar()!=null)
+            response.put("avatar",UserDTO.encodeImageToBase64(account.getUser().getAvatar()));
 //        response.put("role", account.getRole().name());
 
        
@@ -129,7 +124,8 @@ public class AuthController {
     } catch (BadCredentialsException e) {
          return ResponseHandler.resBuilder("Email hoặc mật khẩu không đúng", HttpStatus.UNAUTHORIZED, null);
     } catch (Exception e) {
-          return ResponseHandler.resBuilder("Lỗi khi xác thực", HttpStatus.INTERNAL_SERVER_ERROR, null);
+           e.printStackTrace(); // Ghi lại chi tiết của exception
+          return ResponseHandler.resBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
     }
     }
 

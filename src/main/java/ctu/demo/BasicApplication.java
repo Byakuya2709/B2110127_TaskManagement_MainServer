@@ -1,9 +1,6 @@
 package ctu.demo;
 
-import ctu.demo.model.Product;
-import ctu.demo.repository.ProductRepository;
-import ctu.demo.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

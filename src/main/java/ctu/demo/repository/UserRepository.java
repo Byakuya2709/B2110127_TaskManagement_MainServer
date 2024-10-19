@@ -5,6 +5,7 @@
 package ctu.demo.repository;
 
 import ctu.demo.model.Account;
+import ctu.demo.model.Group;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
 import java.util.List;
@@ -23,7 +24,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
      Optional<User> findByAccountId(Long accountId);
      @Query("SELECT u FROM User u WHERE u.account.role <> :role")
     List<User> findUserNotHasRoleAdmin(@Param("role") Account.Role role);
+     @Query("SELECT u FROM User u WHERE u.account.role = :role")
+    List<User> findUserHasRoleAdmin(@Param("role") Account.Role role);
     //đếm số lượng nhân viên còn hoạt động
     long countByStatus(User.UserStatus status);
-    
+    List<User> findByGroup(Group group);
 }

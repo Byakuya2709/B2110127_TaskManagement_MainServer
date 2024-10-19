@@ -5,6 +5,7 @@
 package ctu.demo.service;
 
 import ctu.demo.model.Account.Role;
+import ctu.demo.model.Group;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
 import ctu.demo.repository.TaskRepository;
@@ -31,8 +32,14 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+    public List<User> getAllUsersGroup(Group gr) {
+        return userRepository.findByGroup(gr);
+    }
     public List<User> getUserNotHasRoleAdmin() {
         return userRepository.findUserNotHasRoleAdmin(Role.ADMIN);
+    }
+    public List<User> getUserHasRoleAdmin() {
+        return userRepository.findUserHasRoleAdmin(Role.ADMIN);
     }
     public User saveUser(User user) {
         return userRepository.save(user);
@@ -46,6 +53,21 @@ public class UserService {
         userRepository.deleteById(id);
     }
     
+    public void deleteUserWithGroup(Long userId) {
+    User user = getUserById(userId);
+    if (user == null) throw new RuntimeException("User Not Found");
+    if (user.getGroup() != null) {
+        Group group = user.getGroup();
+        if (group.getLeader().equals(user)) {
+            group.setLeader(null); 
+        }
+        group.getUsers().remove(user); 
+        user.setGroup(null);
+    }
+
+    // Delete the user
+    deleteUser(userId);
+}
     /**
      * Count the number of active users.
      *
