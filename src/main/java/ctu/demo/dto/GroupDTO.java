@@ -1,39 +1,55 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package ctu.demo.dto;
 
 import ctu.demo.model.Group;
 import ctu.demo.model.User;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- *
- * @author ADMIN
- */
 public class GroupDTO {
-   private Long id;
-   private String name;
-   private String description;
-   private User leader;
-   private List<Long> usersId;
-   public static GroupDTO convertToDto(Group group){
-    GroupDTO dto = new GroupDTO();
+    private Long id;
+    private String name;
+    private String description;
+    private Map<String, Object> leader = new HashMap<>();
+    private List<Map<String, Object>> listUser;
+
+    public static GroupDTO convertToDto(Group group) {
+        GroupDTO dto = new GroupDTO();
         dto.setId(group.getId());
         dto.setName(group.getName());
         dto.setDescription(group.getDescription());
-        dto.setLeader(group.getLeader());
-        dto.setUsersId(
-            group.getUsers() // Giả sử Group có phương thức getUsers() trả về List<User>
-                .stream()
-                .map(User::getId) // Lấy ID của từng User
-                .collect(Collectors.toList()) // Thu thập thành danh sách các ID
+
+        dto.getLeader().put("leaderId", group.getLeader().getId());
+        dto.getLeader().put("leaderName", group.getLeader().getFullname());
+        dto.getLeader().put("leaderAvatar", 
+            group.getLeader().getAvatar() != null ? encodeImageToBase64(group.getLeader().getAvatar()) : null
         );
-         return dto;
+
+        dto.setListUser(
+            group.getUsers() // Assuming Group has a method getUsers() that returns List<User>
+                .stream()
+                .map(user -> {
+                    Map<String, Object> userMap = new HashMap<>();
+                    userMap.put("userId", user.getId());
+                    userMap.put("userFullname", user.getFullname());
+                    userMap.put("userAvatar", 
+                        user.getAvatar() != null ? encodeImageToBase64(user.getAvatar()) : null
+                    );
+                    return userMap;
+                })
+                .collect(Collectors.toList()) // Collect the user maps into a list
+        );
+
+        return dto;
     }
 
+    public static String encodeImageToBase64(byte[] imageBytes) {
+        return Base64.getEncoder().encodeToString(imageBytes);
+    }
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -58,20 +74,19 @@ public class GroupDTO {
         this.description = description;
     }
 
-    public User getLeader() {
+    public Map<String, Object> getLeader() {
         return leader;
     }
 
-    public void setLeader(User leader) {
+    public void setLeader(Map<String, Object> leader) {
         this.leader = leader;
     }
 
-    public List<Long> getUsersId() {
-        return usersId;
+    public List<Map<String, Object>> getListUser() {
+        return listUser;
     }
 
-    public void setUsersId(List<Long> usersId) {
-        this.usersId = usersId;
+    public void setListUser(List<Map<String, Object>> listUser) {
+        this.listUser = listUser;
     }
-   
 }
