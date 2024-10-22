@@ -33,7 +33,7 @@ public class UserDTO {
     dto.setGender(user.getGender());
     dto.setDetail(user.getDetail());
     dto.setStatus(user.getStatus());
-    dto.setGroupName(user.getGroup().getName());
+    dto.setGroupName(user.getGroup()!=null ? user.getGroup().getName(): "Không có nhóm");
     // Chuyển đổi avatar sang base64
     if (user.getAvatar() != null) {
         dto.setBase64Image(encodeImageToBase64(user.getAvatar()));  // Gọi trực tiếp phương thức encodeImageToBase64

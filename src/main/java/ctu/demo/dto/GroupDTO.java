@@ -44,7 +44,6 @@ public class GroupDTO {
 
         return dto;
     }
-
     public static String encodeImageToBase64(byte[] imageBytes) {
         return Base64.getEncoder().encodeToString(imageBytes);
     }

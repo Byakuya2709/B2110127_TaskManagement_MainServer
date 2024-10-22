@@ -4,6 +4,7 @@ import ctu.demo.model.Group;
 import ctu.demo.model.User;
 import ctu.demo.repository.GroupRepository;
 import ctu.demo.request.GroupRequest;
+import ctu.demo.request.UpdateGroupRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,16 +69,31 @@ public class GroupService {
     }
 
     // Method to update a group
-    public Group updateGroup(Long id, String name, String description) {
-        Optional<Group> optionalGroup = groupRepository.findById(id);
-        if (optionalGroup.isPresent()) {
-            Group group = optionalGroup.get();
-            group.setName(name);
-            group.setDescription(description);
-            return groupRepository.save(group); // Save the updated group
-        } else {
-            throw new IllegalArgumentException("Group not found with ID: " + id); // Throw exception if group not found
+    public Group updateGroup(UpdateGroupRequest req) {
+        // Retrieve the group from the repository
+    Optional<Group> optionalGroup = groupRepository.findById((long)req.getGroupId());
+    if (optionalGroup.isPresent()) {
+        Group group = optionalGroup.get();
+
+        // Update the group's description if provided
+        if (req.getDescription() != null) {
+            group.setDescription(req.getDescription());
         }
+
+        // Retrieve the user by ID
+        User user = userService.getUserById((long)req.getUserId());
+        if (user != null) { // Ensure the user exists
+            user.setGroup(group); // Set the group for the user
+            group.getUsers().add(user); // Add the user to the group's list
+        } else {
+            throw new IllegalArgumentException("User not found with ID: " + req.getUserId());
+        }
+
+        // Save the updated group and return
+        return groupRepository.save(group);
+    } else {
+        throw new IllegalArgumentException("Group not found with ID: " + req.getGroupId());
+    }
     }
 
     // Method to delete a group by ID

@@ -11,9 +11,18 @@ package ctu.demo.request;
 public class VerificationRequest {
     String email;
     String code;
+    String type;
 
     public String getEmail() {
         return email;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public void setEmail(String email) {

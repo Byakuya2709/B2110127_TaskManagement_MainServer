@@ -11,9 +11,24 @@ package ctu.demo.request;
 public class MailRequest {
     String email;
     String code;
+    String type;
 
     public String getEmail() {
         return email;
+    }
+
+    public String getTypeOtp() {
+        return type;
+    }
+
+    public void setTypeOtp(String typeOtp) {
+        this.type = typeOtp;
+    }
+
+    public MailRequest(String email, String code, String typeOtp) {
+        this.email = email;
+        this.code = code;
+        this.type = typeOtp;
     }
 
     public MailRequest(String email, String code) {

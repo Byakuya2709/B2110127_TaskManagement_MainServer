@@ -29,4 +29,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     //đếm số lượng nhân viên còn hoạt động
     long countByStatus(User.UserStatus status);
     List<User> findByGroup(Group group);
+    @Query("SELECT u FROM User u WHERE u.account.role <> :role AND u.group IS NULL")
+    List<User> findUserHasNoRoleAdminAndNoGroup(@Param("role") Account.Role role);
 }

@@ -41,6 +41,9 @@ public class UserService {
     public List<User> getUserHasRoleAdmin() {
         return userRepository.findUserHasRoleAdmin(Role.ADMIN);
     }
+     public List<User> getUserHasRoleAdminAndNoGroup() {
+        return userRepository.findUserHasNoRoleAdminAndNoGroup(Role.ADMIN);
+    }
     public User saveUser(User user) {
         return userRepository.save(user);
     }
@@ -89,5 +92,18 @@ public class UserService {
         throw new RuntimeException ("User not found"); // Hoặc xử lý khác tùy vào yêu cầu
     }
     return userOptional.get();
+    }
+      
+      public void setUserActive(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus(User.UserStatus.ACTIVE);
+        userRepository.save(user);
+    }
+       public void setUserInactive(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus(User.UserStatus.INACTIVE);
+        userRepository.save(user);
     }
 }

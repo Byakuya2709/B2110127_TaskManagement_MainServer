@@ -81,6 +81,7 @@ public boolean isEnabled() {
 
     public enum Role {
         CUSTOMER,
+        EMPLOYEE,
         MANAGER,
         ADMIN
     }

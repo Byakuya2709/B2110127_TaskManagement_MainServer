@@ -11,8 +11,18 @@ package ctu.demo.controller;
 class AuthRequest {
     String email;
     String password;
+    String recaptchaToken;
+    
 
     public AuthRequest() {
+    }
+
+    public String getRecaptchaToken() {
+        return recaptchaToken;
+    }
+
+    public void setRecaptchaToken(String recaptchaToken) {
+        this.recaptchaToken = recaptchaToken;
     }
 
     public AuthRequest(String email, String password) {

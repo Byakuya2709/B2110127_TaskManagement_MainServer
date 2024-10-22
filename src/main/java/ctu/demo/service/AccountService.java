@@ -161,7 +161,7 @@ public class AccountService {
                         managementGroup.addUser(user); // Add user to the group
                         user.setGroup(managementGroup); // Set group for each user
                         userService.saveUser(user);
-                        
+
                         groupRepository.save(managementGroup);
                     }
                 }
@@ -208,7 +208,7 @@ public class AccountService {
         Account newAccount = new Account();
         newAccount.setEmail(accountRequest.getEmail());
         newAccount.setPassword(passwordEncoder.encode(accountRequest.getPassword()));
-        newAccount.setRole(Account.Role.CUSTOMER);
+        newAccount.setRole(Account.Role.EMPLOYEE);
 
         // Tạo người dùng mới
         User newUser = new User();
@@ -230,5 +230,23 @@ public class AccountService {
 
         Account savedAccount = saveAccount(newAccount);
         return savedAccount;
+    }
+
+    @Transactional
+    public boolean updatePassword(Account account, String newPassword) {
+        try {
+            // Mã hóa mật khẩu mới trước khi lưu
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            account.setPassword(encodedPassword);
+
+            // Lưu tài khoản đã cập nhật với mật khẩu mới
+            accountRepository.save(account);
+
+            logger.info("Password updated successfully for account with email: {}", account.getEmail());
+            return true; // Trả về true nếu cập nhật thành công
+        } catch (Exception e) {
+            logger.error("Error updating password for account with email {}: {}", account.getEmail(), e.getMessage());
+            return false; // Trả về false nếu có lỗi xảy ra
+        }
     }
 }

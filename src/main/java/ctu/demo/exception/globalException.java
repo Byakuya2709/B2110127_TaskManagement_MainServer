@@ -43,7 +43,16 @@ public class globalException {
     return ResponseHandler.resBuilder(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, errorResponse);
 
     }
+@ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(Exception ex, WebRequest request) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("message", ex.getMessage());
+        errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.put("timestamp", LocalDateTime.now()); // Thêm thời gian lỗi xảy ra
+        errorResponse.put("path", request.getDescription(false)); // Thêm đường dẫn yêu cầu
+    return ResponseHandler.resBuilder(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, errorResponse);
 
+    }
     @ExceptionHandler(ClientAbortException.class)
     public ResponseEntity<Map<String, Object>> handleClientAbortException(ClientAbortException ex, WebRequest request) {
         Map<String, Object> errorResponse = new HashMap<>();
