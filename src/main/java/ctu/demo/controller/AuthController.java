@@ -249,7 +249,7 @@ public class AuthController {
         }
         // Tạo mã xác thực và gửi email
 
-//    emailService.sendVerificationEmail(email, otp);
+        emailService.sendVerificationEmail(email, otp);
         return ResponseHandler.resBuilder("Mã OTP đã được gửi đến email của bạn", HttpStatus.OK, null);
     }
 

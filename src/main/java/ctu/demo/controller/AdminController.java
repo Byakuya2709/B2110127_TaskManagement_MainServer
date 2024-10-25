@@ -13,6 +13,7 @@ import ctu.demo.model.Account;
 import ctu.demo.model.Comment;
 import ctu.demo.model.Group;
 import ctu.demo.model.Task;
+import ctu.demo.model.TaskUpdate;
 import ctu.demo.model.User;
 import ctu.demo.request.GroupRequest;
 import ctu.demo.request.UpdateGroupRequest;
@@ -21,6 +22,7 @@ import ctu.demo.service.AccountService;
 import ctu.demo.service.CommentService;
 import ctu.demo.service.GroupService;
 import ctu.demo.service.TaskService;
+import ctu.demo.service.TaskUpdateService;
 import ctu.demo.service.UserService;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,6 +64,16 @@ public class AdminController {
     private CommentService commentService;
     @Autowired
     private GroupService groupService;
+
+    @Autowired
+    private TaskUpdateService taskUpdateService;
+
+    @GetMapping("/task-updates/all")
+    public ResponseEntity<?> getAllTaskUpdates() {
+        List<TaskUpdate> taskUpdates = taskUpdateService.getAllTaskUpdates();
+       
+        return ResponseHandler.resBuilder("Lấy tất cả các yêu cầu cập nhật thành công", HttpStatus.OK, taskUpdates);
+    }
 
     @GetMapping("/task/all")
     public ResponseEntity<?> getAllTasks() {
