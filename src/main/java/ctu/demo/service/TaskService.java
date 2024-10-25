@@ -5,11 +5,14 @@
 package ctu.demo.service;
 
 import ctu.demo.dto.TaskDTO;
+import ctu.demo.model.Group;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
+import ctu.demo.repository.GroupRepository;
 import ctu.demo.repository.TaskRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,8 @@ public class TaskService {
     private TaskRepository taskRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private GroupRepository groupRepository;
     // Lấy tất cả các task
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
@@ -51,7 +56,17 @@ public class TaskService {
      public Task saveTask(Task task) {
         return taskRepository.save(task);
     }
-    
+     
+    public List<Task> getAllTasksByGroupId(Long groupId) {
+        // Lấy danh sách các thành viên trong nhóm
+        Group group = groupRepository.findById(groupId)
+            .orElseThrow(() -> new RuntimeException("Group not found"));
+        
+        // Lấy tất cả các nhiệm vụ của các thành viên trong nhóm
+        return group.getUsers().stream()
+            .flatMap(user -> taskRepository.findByUserId(user.getId()).stream())
+            .collect(Collectors.toList());
+    }
      public  Task toTask(TaskDTO taskDTO) {
         Task task = new Task();
         task.setTitle(taskDTO.getTitle());

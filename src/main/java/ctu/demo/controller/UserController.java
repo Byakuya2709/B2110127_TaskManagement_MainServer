@@ -9,11 +9,13 @@ import ctu.demo.dto.TaskDTO;
 import ctu.demo.dto.TaskResponse;
 import ctu.demo.dto.UserDTO;
 import ctu.demo.model.Comment;
+import ctu.demo.model.Group;
 import ctu.demo.model.Task;
 import ctu.demo.model.User;
 import ctu.demo.repository.CommentRepository;
 import ctu.demo.respone.ResponseHandler;
 import ctu.demo.service.CommentService;
+import ctu.demo.service.GroupService;
 import ctu.demo.service.TaskService;
 import ctu.demo.service.UserService;
 import java.util.ArrayList;
@@ -39,20 +41,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
     @Autowired
     private TaskService taskService;
     @Autowired
     private UserService userService;
     @Autowired
     private CommentService commentService;
-    
-    
+    @Autowired
+    private GroupService groupService;
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
             User user = userService.getUserById(id);
             UserDTO res = UserDTO.convertToDto(user);
-            if (user!=null) {
+            if (user != null) {
                 return ResponseHandler.resBuilder("Lấy thông tin user thành công", HttpStatus.OK, res);
             } else {
                 return ResponseHandler.resBuilder("User không tồn tại", HttpStatus.NOT_FOUND, null);
@@ -61,51 +65,78 @@ public class UserController {
             return ResponseHandler.resBuilder("Lỗi khi lấy thông tin user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
-    
-    
+
+    @GetMapping("/task/{id}")
+    public ResponseEntity<?> getTask(@PathVariable Long id) {
+        try {
+            Task task = taskService.getTaskById(id).orElseThrow(() -> new RuntimeException("Task không tồn tại"));
+            return ResponseHandler.resBuilder("Lấy task theo id thành công", HttpStatus.OK, Task.toTaskResponse(task));
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi lấy task theo id: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @GetMapping("/group/{userId}/tasks")
+    public ResponseEntity<?> getAllTasksByGroup(@PathVariable Long userId) {
+        try {
+            Group group = groupService.findByUserId(userId);
+            if (group == null) {
+                return ResponseHandler.resBuilder("Người dùng không thuộc về nhóm nào", HttpStatus.BAD_REQUEST, null);
+            }
+            List<Task> tasks = taskService.getAllTasksByGroupId(group.getId());
+            List<TaskResponse> DTO = new ArrayList<>();
+            for (Task task : tasks) {
+                DTO.add(Task.toTaskResponse(task));
+            }
+            return ResponseHandler.resBuilder("Lấy task theo id thành công", HttpStatus.OK,DTO);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi lấy task theo id: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
     @PostMapping("/task/newtask")
     public ResponseEntity<?> createTask(@RequestBody TaskDTO task) {
-    Optional<Task> foundTask = taskService.getTaskByTitle(task.getTitle());
-    if (foundTask.isPresent()) {
-        return ResponseHandler.resBuilder("Task này đã tồn tại", HttpStatus.CONFLICT, null);
+        Optional<Task> foundTask = taskService.getTaskByTitle(task.getTitle());
+        if (foundTask.isPresent()) {
+            return ResponseHandler.resBuilder("Task này đã tồn tại", HttpStatus.CONFLICT, null);
+        }
+        try {
+            Task savedTask = taskService.saveTask(task);
+            return ResponseHandler.resBuilder("Tạo task thành công", HttpStatus.CREATED, Task.toTaskResponse(savedTask));
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi tạo một task mới: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
     }
-    try {
-        Task savedTask = taskService.saveTask(task);
-        return ResponseHandler.resBuilder("Tạo task thành công", HttpStatus.CREATED, Task.toTaskResponse(savedTask));
-    } catch (Exception e) {
-        return ResponseHandler.resBuilder("Lỗi khi tạo một task mới: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
-    }
-}
 
     // Lấy Task theo ID
-   @GetMapping("/{userId}/tasks")
+    @GetMapping("/{userId}/tasks")
     public ResponseEntity<?> getTasksByUserId(@PathVariable Long userId) {
-    List<Task> tasks = userService.getTasksByUserId(userId);
-    List<TaskResponse> taskDTOs = new ArrayList<>();
-    for (Task task : tasks) {
-        taskDTOs.add(Task.toTaskResponse(task));
+        List<Task> tasks = userService.getTasksByUserId(userId);
+        List<TaskResponse> taskDTOs = new ArrayList<>();
+        for (Task task : tasks) {
+            taskDTOs.add(Task.toTaskResponse(task));
+        }
+        return ResponseHandler.resBuilder("Lấy tất cả các task theo userID thành công", HttpStatus.OK, taskDTOs);
     }
-    return ResponseHandler.resBuilder("Lấy tất cả các task theo userID thành công", HttpStatus.OK, taskDTOs);
-}
 
     @PostMapping("/{userId}/task/{taskId}/comment")
     public ResponseEntity<?> createComment(@PathVariable Long userId, @PathVariable Long taskId, @RequestBody CommentDTO commentDTO) {
-    try {
-        User user = userService.getUserById(userId);
-        Task task = taskService.getTaskById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
-        
-        Comment comment = new Comment();
-        comment.setUser(user);
-        comment.setTask(task);
-        comment.setContent(commentDTO.getContent());
-        comment.setCreatedDate(new Date()); // Set created date if needed
-        
-        Comment savedComment = commentService.saveComment(comment);
-        return ResponseHandler.resBuilder("Tạo bình luận thành công", HttpStatus.CREATED, savedComment);
-    } catch (Exception e) {
-        return ResponseHandler.resBuilder("Lỗi khi tạo bình luận: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        try {
+            User user = userService.getUserById(userId);
+            Task task = taskService.getTaskById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+
+            Comment comment = new Comment();
+            comment.setUser(user);
+            comment.setTask(task);
+            comment.setContent(commentDTO.getContent());
+            comment.setCreatedDate(new Date()); // Set created date if needed
+
+            Comment savedComment = commentService.saveComment(comment);
+            return ResponseHandler.resBuilder("Tạo bình luận thành công", HttpStatus.CREATED, savedComment);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi tạo bình luận: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
     }
-}
 
     // Cập nhật một Task
     @PutMapping("/{userId}/task/update/{id}")
@@ -125,14 +156,13 @@ public class UserController {
     }
 
     // Xóa một Task
-   @DeleteMapping("/task/delete/{id}")
-public ResponseEntity<?> deleteTask(@PathVariable Long id) {
-    try {
-        taskService.deleteTask(id);
-        return ResponseHandler.resBuilder("Xóa task thành công", HttpStatus.OK, "Task deleted successfully");
-    } catch (Exception e) {
-        return ResponseHandler.resBuilder("Lỗi khi xóa task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
-    }
-}
- 
+//    @DeleteMapping("/task/delete/{id}")
+//    public ResponseEntity<?> deleteTask(@PathVariable Long id) {
+//        try {
+//            taskService.deleteTask(id);
+//            return ResponseHandler.resBuilder("Xóa task thành công", HttpStatus.OK, "Task deleted successfully");
+//        } catch (Exception e) {
+//            return ResponseHandler.resBuilder("Lỗi khi xóa task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+//        }
+//    }
 }

@@ -15,6 +15,8 @@ public class TaskUpdate {
     @JoinColumn(name = "task_id", nullable = false)
     @JsonIgnore
     private Task task;
+    
+    
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -23,11 +25,14 @@ public class TaskUpdate {
 
     @Column(nullable = false)
     private Task.TaskStatus requestedStatus; // Trạng thái mà người dùng muốn cập nhật
-
+    
+    @Column(nullable = false)
+    private String description; //ý kiến của người dùng về task 
+    
     @Column(nullable = false)
     private Date requestedDate; // Ngày người dùng yêu cầu cập nhật
 
-    @Column
+    @Column(nullable=true)
     private String adminComment; // Nhận xét từ admin về yêu cầu
 
     @Column(nullable = false)

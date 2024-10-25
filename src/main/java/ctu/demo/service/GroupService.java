@@ -23,6 +23,10 @@ public class GroupService {
         return groupRepository.findById(id).orElse(null);
     }
 
+    public Group findByUserId(Long id) {
+        return groupRepository.findByUserId(id);
+    }
+
     // Method to create a new group
     public Group createGroup(GroupRequest request) {
         // Kiểm tra xem tên nhóm đã tồn tại chưa
@@ -44,12 +48,11 @@ public class GroupService {
         if (user.getGroup() != null) {
             throw new RuntimeException("User with ID " + request.getUserId() + " already belongs to a group.");
         }
-        
-        
+
         group.setLeader(user);
         user.setGroup(group);
         group.getUsers().add(user);
-        
+
         return groupRepository.save(group);
     }
 
@@ -71,29 +74,29 @@ public class GroupService {
     // Method to update a group
     public Group updateGroup(UpdateGroupRequest req) {
         // Retrieve the group from the repository
-    Optional<Group> optionalGroup = groupRepository.findById((long)req.getGroupId());
-    if (optionalGroup.isPresent()) {
-        Group group = optionalGroup.get();
+        Optional<Group> optionalGroup = groupRepository.findById((long) req.getGroupId());
+        if (optionalGroup.isPresent()) {
+            Group group = optionalGroup.get();
 
-        // Update the group's description if provided
-        if (req.getDescription() != null) {
-            group.setDescription(req.getDescription());
-        }
+            // Update the group's description if provided
+            if (req.getDescription() != null) {
+                group.setDescription(req.getDescription());
+            }
 
-        // Retrieve the user by ID
-        User user = userService.getUserById((long)req.getUserId());
-        if (user != null) { // Ensure the user exists
-            user.setGroup(group); // Set the group for the user
-            group.getUsers().add(user); // Add the user to the group's list
+            // Retrieve the user by ID
+            User user = userService.getUserById((long) req.getUserId());
+            if (user != null) { // Ensure the user exists
+                user.setGroup(group); // Set the group for the user
+                group.getUsers().add(user); // Add the user to the group's list
+            } else {
+                throw new IllegalArgumentException("User not found with ID: " + req.getUserId());
+            }
+
+            // Save the updated group and return
+            return groupRepository.save(group);
         } else {
-            throw new IllegalArgumentException("User not found with ID: " + req.getUserId());
+            throw new IllegalArgumentException("Group not found with ID: " + req.getGroupId());
         }
-
-        // Save the updated group and return
-        return groupRepository.save(group);
-    } else {
-        throw new IllegalArgumentException("Group not found with ID: " + req.getGroupId());
-    }
     }
 
     // Method to delete a group by ID

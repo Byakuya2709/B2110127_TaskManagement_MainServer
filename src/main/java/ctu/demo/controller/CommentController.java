@@ -49,7 +49,7 @@ public class CommentController {
     }
         try {
              Comment cmt = commentService.saveComment(taskId,cmtDTO);
-            return ResponseHandler.resBuilder("Lấy task theo id thành công", HttpStatus.OK,cmt.toCommentDTO(cmt));
+            return ResponseHandler.resBuilder("Thêm nhận xét thàn công", HttpStatus.OK,cmt.toCommentDTO(cmt));
         } catch (Exception e) {
             return ResponseHandler.resBuilder("Lỗi khi thực hiên comment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
@@ -70,7 +70,7 @@ public class CommentController {
         for (Comment comment : comments) {
             commentDTOs.add(comment.toCommentDTO(comment));
         }
-            return ResponseHandler.resBuilder("Lấy tất cả comment theo task thành công", HttpStatus.OK,commentDTOs);
+            return ResponseHandler.resBuilder("Lấy tất cả nhận xét theo tác vụ thành công", HttpStatus.OK,commentDTOs);
         } catch (Exception e) {
             return ResponseHandler.resBuilder("Lỗi khi lấy comment theo task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
