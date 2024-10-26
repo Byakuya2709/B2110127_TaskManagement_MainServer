@@ -11,18 +11,22 @@ import ctu.demo.dto.UserDTO;
 import ctu.demo.model.Comment;
 import ctu.demo.model.Group;
 import ctu.demo.model.Task;
+import ctu.demo.model.TaskUpdate;
 import ctu.demo.model.User;
 import ctu.demo.repository.CommentRepository;
+import ctu.demo.request.UpdatedTask;
 import ctu.demo.respone.ResponseHandler;
 import ctu.demo.service.CommentService;
 import ctu.demo.service.GroupService;
 import ctu.demo.service.TaskService;
+import ctu.demo.service.TaskUpdateService;
 import ctu.demo.service.UserService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,6 +54,8 @@ public class UserController {
     private CommentService commentService;
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private TaskUpdateService taskUpdateService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
@@ -88,7 +94,7 @@ public class UserController {
             for (Task task : tasks) {
                 DTO.add(Task.toTaskResponse(task));
             }
-            return ResponseHandler.resBuilder("Lấy task theo id thành công", HttpStatus.OK,DTO);
+            return ResponseHandler.resBuilder("Lấy task theo id thành công", HttpStatus.OK, DTO);
         } catch (Exception e) {
             return ResponseHandler.resBuilder("Lỗi khi lấy task theo id: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
@@ -138,22 +144,46 @@ public class UserController {
         }
     }
 
-    // Cập nhật một Task
-    @PutMapping("/{userId}/task/update/{id}")
-    public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
+    @GetMapping("/task/update-request/{userId}/all")
+    public ResponseEntity<?> getAllTaskUpdatesByUser(@PathVariable Long userId) {
         try {
-            Task existingTask = taskService.getTaskById(id).orElseThrow(() -> new RuntimeException("Task không tồn tại"));
-            existingTask.setTitle(taskDTO.getTitle());
-            existingTask.setDescription(taskDTO.getDescription());
-            existingTask.setDate(taskDTO.getDate());
-            existingTask.setStatus(taskDTO.getStatus());
-//            existingTask.setUser(userService.getUserById(taskDTO.getUserID()));
-            Task updatedTask = taskService.saveTask(existingTask);
-            return ResponseHandler.resBuilder("Cập nhật task thành công", HttpStatus.OK, Task.toTaskResponse(updatedTask));
+            List<TaskUpdate> taskUpdates = taskUpdateService.getUpdatesByUserId(userId);
+
+            if (taskUpdates.isEmpty()) {
+                return ResponseHandler.resBuilder("Không tìm thấy yêu cầu cập nhật nào cho người dùng với ID: " + userId, HttpStatus.NOT_FOUND, null);
+            }
+
+            return ResponseHandler.resBuilder("Lấy thành công danh sách yêu cầu cập nhật cho người dùng với ID: " + userId, HttpStatus.OK, taskUpdates);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi lấy các yêu cầu cập nhật task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    // Cập nhật một Task
+    @PostMapping("/task/update")
+    public ResponseEntity<?> updateTask(@RequestBody UpdatedTask updatedTask) {
+        try {
+            TaskUpdate taskUpdate = taskUpdateService.createTaskUpdate(updatedTask);
+            return ResponseHandler.resBuilder("Gửi yêu cầu cập nhật Task thành công.", HttpStatus.OK, taskUpdate);
         } catch (Exception e) {
             return ResponseHandler.resBuilder("Lỗi khi cập nhật task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
+
+    @DeleteMapping("/task/delete/{id}")
+public ResponseEntity<?> deleteUpdatedTask(@PathVariable Long id) {
+    try {
+        if (taskUpdateService.deleteTaskUpdate(id)) {
+            return ResponseHandler.resBuilder("Xóa yêu cầu cập nhật tác vụ: " + id + " thành công", HttpStatus.OK, null);
+        } else {
+            return ResponseHandler.resBuilder("Không tìm thấy yêu cầu cập nhật tác vụ với ID: " + id, HttpStatus.NOT_FOUND, null);
+        }
+    } catch (DataIntegrityViolationException e) {
+        return ResponseHandler.resBuilder("Không thể xóa yêu cầu cập nhật vì có ràng buộc dữ liệu: " + e.getMessage(), HttpStatus.CONFLICT, null);
+    } catch (Exception e) {
+        return ResponseHandler.resBuilder("Lỗi khi xóa yêu cầu cập nhật tác vụ: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+    }
+}
 
     // Xóa một Task
 //    @DeleteMapping("/task/delete/{id}")

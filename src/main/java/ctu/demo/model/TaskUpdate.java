@@ -7,16 +7,14 @@ import javax.persistence.*;
 @Entity
 @Table(name = "task_update")
 public class TaskUpdate {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "task_id", nullable = false)
-    @JsonIgnore
     private Task task;
-    
-    
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -25,14 +23,14 @@ public class TaskUpdate {
 
     @Column(nullable = false)
     private Task.TaskStatus requestedStatus; // Trạng thái mà người dùng muốn cập nhật
-    
-    @Column(nullable = false)
+
+    @Column(nullable = true)
     private String description; //ý kiến của người dùng về task 
-    
+
     @Column(nullable = false)
     private Date requestedDate; // Ngày người dùng yêu cầu cập nhật
 
-    @Column(nullable=true)
+    @Column(nullable = true)
     private String adminComment; // Nhận xét từ admin về yêu cầu
 
     @Column(nullable = false)
@@ -48,6 +46,14 @@ public class TaskUpdate {
     public TaskUpdate() {
         this.status = UpdateStatus.PENDING; // Mặc định là đang chờ xử lý khi tạo yêu cầu
         this.requestedDate = new Date(); // Lưu thời gian yêu cầu
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     // Getters và setters
@@ -107,8 +113,6 @@ public class TaskUpdate {
         this.status = status;
     }
 
-    
-    
 //    // Phương thức để xử lý khi admin phê duyệt yêu cầu
 //    public void approve() {
 //        if (this.status == UpdateStatus.PENDING) {

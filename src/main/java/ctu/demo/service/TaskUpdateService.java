@@ -6,12 +6,14 @@ import ctu.demo.model.TaskUpdate.UpdateStatus;
 import ctu.demo.repository.TaskRepository;
 import ctu.demo.repository.TaskUpdateRepository;
 import ctu.demo.repository.UserRepository;
+import ctu.demo.request.UpdatedTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Service
 public class TaskUpdateService {
@@ -30,21 +32,37 @@ public class TaskUpdateService {
     }
 
     // Tạo một yêu cầu cập nhật trạng thái của Task
-    public TaskUpdate createTaskUpdate(Long taskId, Long userId, Task.TaskStatus requestedStatus) {
-        Optional<Task> optionalTask = taskRepository.findById(taskId);
+    public TaskUpdate createTaskUpdate(UpdatedTask updatedTask) {
+
+        Optional<Task> optionalTask = taskRepository.findById((long) updatedTask.getTaskId());
         if (optionalTask.isEmpty()) {
-            throw new IllegalArgumentException("Task không tồn tại với ID: " + taskId);
+            throw new IllegalArgumentException("Task không tồn tại với ID: " + updatedTask.getTaskId());
         }
 
         Task task = optionalTask.get();
         TaskUpdate taskUpdate = new TaskUpdate();
         taskUpdate.setTask(task);
-        taskUpdate.setUser(userRepository.findById(userId).orElseThrow(
-                () -> new IllegalArgumentException("Người dùng không tồn tại với ID: " + userId)));
-        taskUpdate.setRequestedStatus(requestedStatus);
+        taskUpdate.setUser(userRepository.findById((long) updatedTask.getUserId()).orElseThrow(
+                () -> new IllegalArgumentException("Người dùng không tồn tại với ID: " + updatedTask.getUserId())));
+        taskUpdate.setRequestedStatus(updatedTask.getUpdateStatus());
+        taskUpdate.setDescription(updatedTask.getUpdateDescription());
         taskUpdate.setRequestedDate(new Date());
 
         return taskUpdateRepository.save(taskUpdate);
+    }
+
+    public boolean deleteTaskUpdate(Long id) {
+        try {
+            if (taskUpdateRepository.existsById(id)) {
+                taskUpdateRepository.deleteById(id);
+                return true;
+            }
+        } catch (DataIntegrityViolationException e) {
+            // Log the error for debugging
+            System.err.println("Error while deleting TaskUpdate: " + e.getMessage());
+            // Handle specific errors based on your application's logic
+        }
+        return false;
     }
 
     // Lấy tất cả các yêu cầu cập nhật theo trạng thái
@@ -74,6 +92,10 @@ public class TaskUpdateService {
     // Lấy tất cả các yêu cầu cập nhật liên quan đến một task
     public List<TaskUpdate> getTaskUpdatesByTaskId(Long taskId) {
         return taskUpdateRepository.findByTaskId(taskId);
+    }
+
+    public List<TaskUpdate> getUpdatesByUserId(Long userId) {
+        return taskUpdateRepository.findByUser_Id(userId);
     }
 
     // Lấy thông tin chi tiết của một yêu cầu cập nhật theo ID
