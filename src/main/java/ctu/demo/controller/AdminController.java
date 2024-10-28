@@ -15,6 +15,7 @@ import ctu.demo.model.Group;
 import ctu.demo.model.Task;
 import ctu.demo.model.TaskUpdate;
 import ctu.demo.model.User;
+import ctu.demo.request.ConfirmUpdateRequest;
 import ctu.demo.request.GroupRequest;
 import ctu.demo.request.UpdateGroupRequest;
 import ctu.demo.respone.ResponseHandler;
@@ -71,7 +72,7 @@ public class AdminController {
     @GetMapping("/task-updates/all")
     public ResponseEntity<?> getAllTaskUpdates() {
         List<TaskUpdate> taskUpdates = taskUpdateService.getAllTaskUpdates();
-       
+
         return ResponseHandler.resBuilder("Lấy tất cả các yêu cầu cập nhật thành công", HttpStatus.OK, taskUpdates);
     }
 
@@ -84,7 +85,6 @@ public class AdminController {
         }
         return ResponseHandler.resBuilder("Lấy tất cả các task thành công", HttpStatus.OK, DTO);
     }
-
 //    @GetMapping("/group/{id}")
 //    public ResponseEntity<?> getUserOfGroup(@PathVariable("id") Long id) {
 //        Group group = groupService.findById(id);
@@ -94,6 +94,7 @@ public class AdminController {
 //        List<User> users = userService.getAllUsersGroup(group);
 //        return ResponseHandler.resBuilder("Lấy tất cả các task thành công", HttpStatus.OK, users);
 //    }
+
     @PostMapping("/group/create")
     public ResponseEntity<?> createGroup(@RequestBody GroupRequest groupRequest) {
         try {
@@ -119,6 +120,52 @@ public class AdminController {
         } catch (Exception e) {
             // Xử lý các ngoại lệ khác và trả về lỗi máy chủ nội bộ
             return ResponseHandler.resBuilder("Đã xảy ra lỗi không mong muốn: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @GetMapping("/task/update-request/all")
+    public ResponseEntity<?> getAllTaskUpdatesRequest() {
+        try {
+            List<TaskUpdate> taskUpdates = taskUpdateService.getAllTaskUpdates();
+
+            if (taskUpdates.isEmpty()) {
+                return ResponseHandler.resBuilder("Không tìm thấy yêu cầu cập nhật tác vụ nào", HttpStatus.NOT_FOUND, null);
+            }
+
+            return ResponseHandler.resBuilder("Lấy thành công danh sách yêu cầu cập nhật tác vụ", HttpStatus.OK, taskUpdates);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi lấy các yêu cầu cập nhật task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @PutMapping("/task/update-request/approve")
+    public ResponseEntity<?> approveTaskUpdatesRequest(@RequestBody ConfirmUpdateRequest req) {
+        System.out.println(req.toString());
+        try {
+            TaskUpdate taskUpdate = taskUpdateService.approveTaskUpdate(req);
+            if (taskUpdate == null) {
+                return ResponseHandler.resBuilder("Lỗi khi xác thực yêu cầu cập nhật tác vụ", HttpStatus.BAD_REQUEST, null);
+            }
+            return ResponseHandler.resBuilder("Yêu cầu cập nhật tác vụ đã được phê duyệt thành công.", HttpStatus.OK, taskUpdate);
+        } catch (IllegalArgumentException e) {
+            return ResponseHandler.resBuilder("Lỗi: " + e.getMessage(), HttpStatus.BAD_REQUEST, null);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi xử lý yêu cầu phê duyệt tác vụ: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @PutMapping("/task/update-request/reject")
+    public ResponseEntity<?> rejectTaskUpdatesRequest(@RequestBody ConfirmUpdateRequest req) {
+        try {
+            TaskUpdate taskUpdate = taskUpdateService.rejectTaskUpdate(req);
+            if (taskUpdate == null) {
+                return ResponseHandler.resBuilder("Lỗi khi xác thực yêu cầu cập nhật tác vụ", HttpStatus.BAD_REQUEST, null);
+            }
+            return ResponseHandler.resBuilder("Yêu cầu cập nhật tác vụ đã bị từ chối thành công.", HttpStatus.OK, taskUpdate);
+        } catch (IllegalArgumentException e) {
+            return ResponseHandler.resBuilder("Lỗi: " + e.getMessage(), HttpStatus.BAD_REQUEST, null);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi xử lý yêu cầu từ chối tác vụ: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
 
@@ -300,7 +347,7 @@ public class AdminController {
         }
         try {
             Comment cmt = commentService.saveComment(taskId, cmtDTO);
-            return ResponseHandler.resBuilder("Lấy task theo id thành công", HttpStatus.OK, cmt.toCommentDTO(cmt));
+            return ResponseHandler.resBuilder("Lấy task theo id thành công", HttpStatus.CREATED, cmt.toCommentDTO(cmt));
         } catch (Exception e) {
             return ResponseHandler.resBuilder("Lỗi khi lấy task theo id: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }

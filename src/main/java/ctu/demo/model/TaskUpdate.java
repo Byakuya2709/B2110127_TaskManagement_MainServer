@@ -29,7 +29,9 @@ public class TaskUpdate {
 
     @Column(nullable = false)
     private Date requestedDate; // Ngày người dùng yêu cầu cập nhật
-
+    @Column(nullable = true)
+    private Date updatedDate;
+    
     @Column(nullable = true)
     private String adminComment; // Nhận xét từ admin về yêu cầu
 
@@ -46,6 +48,14 @@ public class TaskUpdate {
     public TaskUpdate() {
         this.status = UpdateStatus.PENDING; // Mặc định là đang chờ xử lý khi tạo yêu cầu
         this.requestedDate = new Date(); // Lưu thời gian yêu cầu
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
     public String getDescription() {
