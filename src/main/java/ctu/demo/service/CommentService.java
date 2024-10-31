@@ -54,12 +54,11 @@ public class CommentService {
     }
 
     // Update an existing comment
-    public Comment updateComment(Long id, Comment newCommentData) {
+    public Comment updateComment(Long id,CommentDTO newCommentData) {
         return commentRepository.findById(id)
                 .map(comment -> {
                     comment.setContent(newCommentData.getContent());
-                    comment.setCreatedDate(newCommentData.getCreatedDate());
-                    // You can update other fields as needed
+                    comment.setCreatedDate(new Date());
                     return commentRepository.save(comment);
                 }).orElseThrow(() -> new RuntimeException("Comment not found"));
     }

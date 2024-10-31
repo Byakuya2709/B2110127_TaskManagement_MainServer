@@ -140,7 +140,7 @@ public class AdminController {
 
     @PutMapping("/task/update-request/approve")
     public ResponseEntity<?> approveTaskUpdatesRequest(@RequestBody ConfirmUpdateRequest req) {
-        System.out.println(req.toString());
+      System.out.println(req.toString());
         try {
             TaskUpdate taskUpdate = taskUpdateService.approveTaskUpdate(req);
             if (taskUpdate == null) {
@@ -156,6 +156,7 @@ public class AdminController {
 
     @PutMapping("/task/update-request/reject")
     public ResponseEntity<?> rejectTaskUpdatesRequest(@RequestBody ConfirmUpdateRequest req) {
+          
         try {
             TaskUpdate taskUpdate = taskUpdateService.rejectTaskUpdate(req);
             if (taskUpdate == null) {
@@ -214,9 +215,9 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/account")
-    public ResponseEntity<?> getAcount() {
-        Account account = accountService.findAccountByEmail("khanhnguyen147348@gmail.com");
+    @GetMapping("/account/{email}")
+    public ResponseEntity<?> getAcount(@PathVariable("email") String email) {
+        Account account = accountService.findAccountByEmail(email);
         if (account == null) {
             return ResponseHandler.resBuilder("Tài khoản không tồn tại", HttpStatus.NOT_FOUND, null);
         }
