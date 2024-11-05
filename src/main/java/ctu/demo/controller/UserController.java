@@ -14,6 +14,7 @@ import ctu.demo.model.Task;
 import ctu.demo.model.TaskUpdate;
 import ctu.demo.model.User;
 import ctu.demo.repository.CommentRepository;
+import ctu.demo.request.UpdateUserRequest;
 import ctu.demo.request.UpdatedTask;
 import ctu.demo.respone.ResponseHandler;
 import ctu.demo.service.CommentService;
@@ -21,6 +22,8 @@ import ctu.demo.service.GroupService;
 import ctu.demo.service.TaskService;
 import ctu.demo.service.TaskUpdateService;
 import ctu.demo.service.UserService;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +39,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -69,6 +74,25 @@ public class UserController {
             }
         } catch (Exception e) {
             return ResponseHandler.resBuilder("Lỗi khi lấy thông tin user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @PutMapping("/update-profile/{id}")
+    public ResponseEntity<?> updateUserById(@PathVariable Long id, @RequestPart("user") UpdateUserRequest req,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        System.out.println(req.toString());
+        try {
+            UserDTO user = userService.updateUser(id, req, image);
+            return ResponseHandler.resBuilder("Cập nhật thông tin user thành công!", HttpStatus.OK, user);
+        } catch (ParseException e) {
+            // Handle ParseException specifically
+            return ResponseHandler.resBuilder("Lỗi định dạng dữ liệu: " + e.getMessage(), HttpStatus.BAD_REQUEST, null);
+        } catch (IOException e) {
+            // Handle IOException specifically
+            return ResponseHandler.resBuilder("Lỗi khi xử lý tệp: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        } catch (Exception e) {
+            // Catch all other exceptions
+            return ResponseHandler.resBuilder("Lỗi khi cập nhật thông tin user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
 
@@ -171,19 +195,19 @@ public class UserController {
     }
 
     @DeleteMapping("/task/delete/{id}")
-public ResponseEntity<?> deleteUpdatedTask(@PathVariable Long id) {
-    try {
-        if (taskUpdateService.deleteTaskUpdate(id)) {
-            return ResponseHandler.resBuilder("Xóa yêu cầu cập nhật tác vụ: " + id + " thành công", HttpStatus.OK, null);
-        } else {
-            return ResponseHandler.resBuilder("Không tìm thấy yêu cầu cập nhật tác vụ với ID: " + id, HttpStatus.NOT_FOUND, null);
+    public ResponseEntity<?> deleteUpdatedTask(@PathVariable Long id) {
+        try {
+            if (taskUpdateService.deleteTaskUpdate(id)) {
+                return ResponseHandler.resBuilder("Xóa yêu cầu cập nhật tác vụ: " + id + " thành công", HttpStatus.OK, null);
+            } else {
+                return ResponseHandler.resBuilder("Không tìm thấy yêu cầu cập nhật tác vụ với ID: " + id, HttpStatus.NOT_FOUND, null);
+            }
+        } catch (DataIntegrityViolationException e) {
+            return ResponseHandler.resBuilder("Không thể xóa yêu cầu cập nhật vì có ràng buộc dữ liệu: " + e.getMessage(), HttpStatus.CONFLICT, null);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Lỗi khi xóa yêu cầu cập nhật tác vụ: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
-    } catch (DataIntegrityViolationException e) {
-        return ResponseHandler.resBuilder("Không thể xóa yêu cầu cập nhật vì có ràng buộc dữ liệu: " + e.getMessage(), HttpStatus.CONFLICT, null);
-    } catch (Exception e) {
-        return ResponseHandler.resBuilder("Lỗi khi xóa yêu cầu cập nhật tác vụ: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
     }
-}
 
     // Xóa một Task
 //    @DeleteMapping("/task/delete/{id}")

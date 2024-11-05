@@ -23,6 +23,7 @@ public class UserDTO {
     private String detail;
     private User.UserStatus status;
     private String groupName;
+    private String email;
     
    public static UserDTO convertToDto(User user) {
     UserDTO dto = new UserDTO();
@@ -33,6 +34,8 @@ public class UserDTO {
     dto.setGender(user.getGender());
     dto.setDetail(user.getDetail());
     dto.setStatus(user.getStatus());
+    dto.setEmail(user.getAccount().getEmail());
+    
     dto.setGroupName(user.getGroup()!=null ? user.getGroup().getName(): "Không có nhóm");
     // Chuyển đổi avatar sang base64
     if (user.getAvatar() != null) {
@@ -50,6 +53,14 @@ public static String encodeImageToBase64(byte[] imageBytes) {
 
     public String getGroupName() {
         return groupName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setGroupName(String groupName) {
