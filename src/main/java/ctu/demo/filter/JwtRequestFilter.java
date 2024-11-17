@@ -32,7 +32,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
     @Autowired
     private JwtUtil jwtTokenUtil;
 
@@ -40,52 +41,52 @@ private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.cl
     private UserDetailsServiceImpl userDetailsService;
 
     @Override
-protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
 
-    final String authorizationHeader = request.getHeader("Authorization");
+        final String authorizationHeader = request.getHeader("Authorization");
 
-    String username = null;
-    String jwtToken = null;
+        String username = null;
+        String jwtToken = null;
 
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-        jwtToken = authorizationHeader.substring(7);
-        try {
-            username = jwtTokenUtil.extractUsername(jwtToken);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Unable to get JWT Token: {}", e.getMessage());
-        } catch (ExpiredJwtException e) {
-            logger.warn("JWT Token has expired: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("JWT Token has expired");
-            return; // Stop further processing if the token is expired
-        } catch (MalformedJwtException e) {
-            logger.warn("Invalid JWT Token: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Invalid JWT Token");
-            return; // Stop further processing if the token is malformed
-        } catch (Exception e) {
-            logger.error("JWT Token processing error: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("Internal server error while processing the token");
-            return; // Stop further processing if any other error occurs
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            jwtToken = authorizationHeader.substring(7);
+            try {
+                username = jwtTokenUtil.extractUsername(jwtToken);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Unable to get JWT Token: {}", e.getMessage());
+            } catch (ExpiredJwtException e) {
+                logger.warn("JWT Token has expired: {}", e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("JWT Token has expired");
+                return; // Stop further processing if the token is expired
+            } catch (MalformedJwtException e) {
+                logger.warn("Invalid JWT Token: {}", e.getMessage());
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("Invalid JWT Token");
+                return; // Stop further processing if the token is malformed
+            } catch (Exception e) {
+                logger.error("JWT Token processing error: {}", e.getMessage());
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("Internal server error while processing the token");
+                return; // Stop further processing if any other error occurs
+            }
+        } else {
+            logger.warn("JWT Token does not begin with Bearer String");
         }
-    } else {
-        logger.warn("JWT Token does not begin with Bearer String");
-    }
 
-    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
-    }
 
-    chain.doFilter(request, response);
-}
+        chain.doFilter(request, response);
+    }
 
 }

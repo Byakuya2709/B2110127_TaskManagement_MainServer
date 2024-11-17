@@ -15,7 +15,8 @@ public class JwtUtil {
 
     private final String SECRET_KEY = "your_secret_key";
     private final long EXPIRATION_TIME = 1000 * 60 * 15; // 15phut
-    public String generateToken(UserDetails userDetails, Long userId,String userName) {
+
+    public String generateToken(UserDetails userDetails, Long userId, String userName) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", userDetails.getAuthorities().stream().findFirst().orElse(null).getAuthority());
         claims.put("userId", userId);
