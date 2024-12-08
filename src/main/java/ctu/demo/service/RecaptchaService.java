@@ -18,8 +18,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class RecaptchaService {
   private static final Logger logger = LoggerFactory.getLogger(RecaptchaService.class);
-    @Value("${recaptcha.secret.key}") // Đặt key trong application.properties
-    private String secretKey;
+    
+    private String secretKey="6LeM92gqAAAAAMUGRSCcUSJowbyrP2KkaIeWPmx1";
 
     private final RestTemplate restTemplate;
 
