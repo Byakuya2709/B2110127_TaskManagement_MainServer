@@ -104,6 +104,7 @@ public class AuthController {
 
         // Tạo mã OTP và gửi email
         String otp = otpService.generateOtp();
+        emailService.sendVerificationEmail(email, otp);
         try {
             RestTemplate restTemplate = new RestTemplate();
             String url = "http://localhost:8081/api/otp/generate";
